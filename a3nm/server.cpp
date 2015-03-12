@@ -41,7 +41,6 @@ int main() {
     int z, c;
     scanf("%d", &z);
     scanf("%d", &c);
-    printf("%d %d\n", z, c);
     serv.push_back(Server(i, z, c));
   }
 
@@ -101,12 +100,19 @@ int main() {
       capa[idx] += serv[i].c;
       gcapa[whererow][idx] += serv[i].c;
       for (int k = 0; k < serv[i].z; k++)
-        grid[whererow][wherecol] = 1;
+        grid[whererow][wherecol+k] = 2;
       fposr[serv[i].id] = whererow;
       fposc[serv[i].id] = wherecol;
       fgroup[serv[i].id] = idx;
     }
   }
+  
+  for (int i = 0; i < R; i++) {
+    for (int j = 0; j < S; j++)
+      putchar(grid[i][j] == 1? 'X' : (grid[i][j] == 2 ? 'O' : ' '));
+    putchar('\n');
+  }
+
 
   // display sol
   for (int i= 0 ; i < M; i++) {
