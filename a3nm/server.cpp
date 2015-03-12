@@ -12,7 +12,7 @@ typedef pair<int,pii> piii;
 
 struct Server{
    int id, z, c;
-   Server(int id=0, z=0, c=0) : id(id), z(z), c(c) {}
+   Server(int id=0, int z=0, int c=0) : id(id), z(z), c(c) {}
    bool operator< (const Server &s) const{
       return z/c < s.z/s.c;
    }
@@ -20,7 +20,7 @@ struct Server{
 
 int main() {
   int R, S, U, P, M;
-  vector<pii> serv;
+  vector<Server> serv;
   char grid[MAXN][MAXN]; // row, col
   int capa[MAXN];
   int gcapa[MAXN][MAXN]; // row, group
@@ -41,15 +41,13 @@ int main() {
     int z, c;
     scanf("%d", &z);
     scanf("%d", &c);
+    printf("%d %d\n", z, c);
     serv.push_back(Server(i, z, c));
   }
 
   sort(serv.begin(), serv.end());
   reverse(serv.begin(), serv.end());
 
-  for (int i = 0; i < M; i++)
-    serv[i].first *= serv[i].second;
-  
   for (int i = 0; i < M; i++) {
     fposr[i] = fposc[i] = fgroup[i] = -1;
   }
@@ -86,27 +84,27 @@ int main() {
           contig++;
         else
           contig = 0;
-        if (contig == serv[i].second) {
+        if (contig == serv[i].z) {
           // ok, can place
           break;
         }
       }
-      if (contig == serv[i].second) {
+      if (contig == serv[i].z) {
         // do place
-        wherecol = k - (serv[i].second - 1);
+        wherecol = k - (serv[i].z - 1);
         whererow = row;
         break;
       }
     }
     if (wherecol >= 0 && whererow >= 0) {
       // yeah, we can place it! update
-      capa[idx] += serv[i].first;
-      gcapa[whererow][idx] += serv[i].first;
-      for (int k = 0; k < serv[i].second; k++)
+      capa[idx] += serv[i].c;
+      gcapa[whererow][idx] += serv[i].c;
+      for (int k = 0; k < serv[i].z; k++)
         grid[whererow][wherecol] = 1;
-      fposr[i] = whererow;
-      fposc[i] = wherecol;
-      fgroup[i] = idx;
+      fposr[serv[i].id] = whererow;
+      fposc[serv[i].id] = wherecol;
+      fgroup[serv[i].id] = idx;
     }
   }
 
