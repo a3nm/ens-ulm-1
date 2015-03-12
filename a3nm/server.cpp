@@ -10,6 +10,14 @@ using namespace std;
 typedef pair<int,int> pii;
 typedef pair<int,pii> piii;
 
+struct Server{
+   int id, z, c;
+   Server(int id=0, z=0, c=0) : id(id), z(z), c(c) {}
+   bool operator< (const Server &s) const{
+      return z/c < s.z/s.c;
+   }
+};
+
 int main() {
   int R, S, U, P, M;
   vector<pii> serv;
@@ -33,7 +41,7 @@ int main() {
     int z, c;
     scanf("%d", &z);
     scanf("%d", &c);
-    serv.push_back(make_pair<int, int>(c/z, z));
+    serv.push_back(Server(i, z, c));
   }
 
   sort(serv.begin(), serv.end());
