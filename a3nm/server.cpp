@@ -14,8 +14,8 @@ struct Server{
    int id, z, c;
    Server(int id=0, int z=0, int c=0) : id(id), z(z), c(c) {}
    bool operator< (const Server &s) const{
-      if (z*s.c == s.z*c) return z < s.z;
-      return z*s.c < s.z*c;
+      if (z*s.c == s.z*c) return z > s.z;
+      return z*s.c > s.z*c;
    }
 };
 
@@ -49,6 +49,16 @@ int main() {
   reverse(serv.begin(), serv.end());
 
   // now keep only the servers we will use
+  int free = R * S - U;
+
+  int i;
+  for (i = 0; i < M; i++) {
+    free -= serv[i].c;
+    if (free <= 0)
+      break;
+  }
+
+  sort(serv.begin(), serv.begin() + i);
 
   for (int i = 0; i < M; i++) {
     fposr[i] = fposc[i] = fgroup[i] = -1;
@@ -107,6 +117,8 @@ int main() {
       fposr[serv[i].id] = whererow;
       fposc[serv[i].id] = wherecol;
       fgroup[serv[i].id] = idx;
+    } else {
+      printf("CANNOT PLACE!!\n");
     }
   }
 
@@ -130,6 +142,8 @@ int main() {
       putchar(grid[i][j] == 1? 'X' : (grid[i][j] == 2 ? 'O' : ' '));
     putchar('\n');
   }
+
+  printf("CUT\n");
 
   // display sol
   for (int i= 0 ; i < M; i++) {
