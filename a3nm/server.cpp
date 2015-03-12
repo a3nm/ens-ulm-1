@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <map>
 
+// Compile WITHOUT OPTIMS!!
+
 using namespace std;
 
 #define MAXN 1002
@@ -14,22 +16,25 @@ struct Server{
    int id, z, c;
    Server(int id=0, int z=0, int c=0) : id(id), z(z), c(c) {}
    bool operator< (const Server &s) const{
-      if (z*s.c == s.z*c) return z < s.z;
+      if (z*s.c == s.z*c) return z > s.z;
       return z*s.c < s.z*c;
    }
 };
 
 struct comp{
    bool operator() (const Server &a, const Server &b){
-      return a.z < b.z;
+      if (a.z == b.z)
+        return a.c > b.c;
+      return a.z > b.z;
    }
 };
 
-int main() {
+int main(int argc, char **argv) {
   int R, S, U, P, M;
   vector<Server> serv;
   char grid[MAXN][MAXN]; // row, col
   int capa[MAXN];
+  int space[MAXN]; // free space
   int gcapa[MAXN][MAXN]; // row, group
   int fposr[MAXN], fposc[MAXN], fgroup[MAXN];
 
@@ -38,11 +43,14 @@ int main() {
   scanf("%d", &U);
   scanf("%d", &P);
   scanf("%d", &M);
+  for (int i = 0; i < R; i++)
+    space[i] = S;
   for (int i = 0; i < U; i++) {
     int r, s;
     scanf("%d", &r);
     scanf("%d", &s);
     grid[r][s] = 1;
+    space[r] -= 1;
   }
   for (int i = 0; i < M; i++) {
     int z, c;
@@ -55,22 +63,29 @@ int main() {
 
   // now keep only the servers we will use
   int free = R * S - U;
+  int besttcapa = 0;
 
   int i;
   for (i = 0; i < M; i++) {
-    free -= serv[i].c;
+    free -= serv[i].c; // should be .z, but???!
+    if (free >= 0)
+      besttcapa += serv[i].c;
     if (free <= 0)
       break;
   }
 
-  sort(serv.begin(), serv.begin() + i, comp());
+  // for i in `seq 500`; do echo -n "$i "; ./a.out $i < ../dc.in  | grep FINAL | cut -d ' ' -f2 ; done | sort -k2,2n
+  // USE 470
+  sort(serv.begin(), serv.begin() + i + atoi(argv[1]), comp());
 
+  int ftcapa = 0;
   for (int i = 0; i < M; i++) {
     fposr[i] = fposc[i] = fgroup[i] = -1;
   }
 
   for (int i = 0; i < M; i++) {
     // place server i
+    printf("i want to place server %d id %d c %d z %d, c/z %f\n", i, serv[i].id, serv[i].c, serv[i].z, 1. * serv[i].c/serv[i].z);
     // choose the group with lowest guaranteed
     int guar[MAXN];
     for (int j = 0; j < P; j++)
@@ -78,7 +93,8 @@ int main() {
     for (int j = 0; j < R; j++)
       for (int k = 0; k < P; k++)
         guar[k] = min(guar[k], capa[k] - gcapa[j][k]);
-    int mguar = guar[0], idx = 0;
+    int mguar = guar[0];
+    int idx = 0;
     for (int j = 0; j < P; j++)
       if (guar[j] < mguar) {
         mguar = guar[j];
@@ -88,8 +104,10 @@ int main() {
     // choose where to place server
     vector<pii> v;
     int wherecol = -1, whererow = -1;
-    for (int j = 0; j < R; j++)
-      v.push_back(make_pair<int, int>(gcapa[j][idx], j));
+    for (int j = 0; j < R; j++) {
+      printf("gcapa of row is %d and space is %d\n", gcapa[j][idx], space[j]);
+      v.push_back(make_pair<int, int>(MAXN * gcapa[j][idx] + (MAXN-1) - space[j], j));
+    }
     sort(v.begin(), v.end());
     for (int j = 0; j < R; j++) {
       // try to place in row
@@ -122,6 +140,8 @@ int main() {
       fposr[serv[i].id] = whererow;
       fposc[serv[i].id] = wherecol;
       fgroup[serv[i].id] = idx;
+      space[whererow] -= serv[i].z;
+      ftcapa += serv[i].c;
     } else {
       printf("CANNOT PLACE!!\n");
     }
@@ -134,12 +154,15 @@ int main() {
   for (int j = 0; j < R; j++)
     for (int k = 0; k < P; k++)
       fguar[k] = min(fguar[k], capa[k] - gcapa[j][k]);
-  int mfguar = fguar[0], idx = 0;
+  int mfguar = fguar[0];
   for (int j = 0; j < P; j++)
     if (fguar[j] < mfguar) {
       mfguar = fguar[j];
     }
 
+  printf("best %d placed %d\n", besttcapa, ftcapa);
+  for (int i = 0; i < P; i++)
+    printf("guar for %d: %d\n", i, fguar[i]);
   printf("FINAL: %d\n", mfguar);
   
   for (int i = 0; i < R; i++) {
