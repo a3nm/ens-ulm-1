@@ -64,7 +64,7 @@ int main() {
     // idx is the group
     // choose where to place server
     vector<pii> v;
-    int where = -1;
+    int wherecol = -1, whererow = -1;
     for (int j = 0; j < R; j++)
       v.push_back(make_pair<int, int>(gcapa[j][idx], j));
     sort(v.begin(), v.end());
@@ -72,7 +72,8 @@ int main() {
       // try to place in row
       int row = v[j].second;
       int contig = 0;
-      for (int k = 0; k < S; k++) {
+      int k;
+      for (k = 0; k < S; k++) {
         if (!grid[row][k])
           contig++;
         else
@@ -84,11 +85,21 @@ int main() {
       }
       if (contig == serv[i].second) {
         // do place
-        where = k - (serv[i].second - 1);
+        wherecol = k - (serv[i].second - 1);
+        whererow = row;
         break;
       }
     }
-    // place serv[i]
+    if (wherecol >= 0 && whererow >= 0) {
+      // yeah, we can place it! update
+      capa[idx] += serv[i].first;
+      gcapa[whererow][idx] += serv[i].first;
+      for (int k = 0; k < serv[i].second; k++)
+        grid[whererow][wherecol] = 1;
+      fposr[i] = whererow;
+      fposc[i] = wherecol;
+      fgroup[i] = idx;
+    }
   }
 
   // display sol
