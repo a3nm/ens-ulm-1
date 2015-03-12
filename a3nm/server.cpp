@@ -14,8 +14,14 @@ struct Server{
    int id, z, c;
    Server(int id=0, int z=0, int c=0) : id(id), z(z), c(c) {}
    bool operator< (const Server &s) const{
-      if (z*s.c == s.z*c) return z > s.z;
-      return z*s.c > s.z*c;
+      if (z*s.c == s.z*c) return z < s.z;
+      return z*s.c < s.z*c;
+   }
+};
+
+struct comp{
+   bool operator() (const Server &a, const Server &b){
+      return a.z < b.z;
    }
 };
 
@@ -46,7 +52,6 @@ int main() {
   }
 
   sort(serv.begin(), serv.end());
-  reverse(serv.begin(), serv.end());
 
   // now keep only the servers we will use
   int free = R * S - U;
@@ -58,7 +63,7 @@ int main() {
       break;
   }
 
-  sort(serv.begin(), serv.begin() + i);
+  sort(serv.begin(), serv.begin() + i, comp());
 
   for (int i = 0; i < M; i++) {
     fposr[i] = fposc[i] = fgroup[i] = -1;
