@@ -67,29 +67,25 @@ int main(int argc, char **argv) {
 
   int i;
   for (i = 0; i < M; i++) {
-    free -= serv[i].z; // should be .z, but???!
+    free -= serv[i].c; // should be .z, but???!
     if (free >= 0)
       besttcapa += serv[i].c;
-    if (free == 0)
+    if (free <= 0)
       break;
-    if (free < 0) {
-      free += serv[i].z; // undo
-    }
   }
 
   // for i in `seq 500`; do echo -n "$i "; ./a.out $i < ../dc.in  | grep FINAL | cut -d ' ' -f2 ; done | sort -k2,2n
   // USE 470
-  sort(serv.begin(), min(serv.begin() + i + atoi(argv[1]), serv.end()), comp());
+  sort(serv.begin(), serv.begin() + i + atoi(argv[1]), comp());
 
   int ftcapa = 0;
   for (int i = 0; i < M; i++) {
     fposr[i] = fposc[i] = fgroup[i] = -1;
   }
 
-  free = R * S - U;
   for (int i = 0; i < M; i++) {
     // place server i
-    printf("i want to place server %d id %d c %d z %d, c/z %f, I have free %d and capa %d\n", i, serv[i].id, serv[i].c, serv[i].z, 1. * serv[i].c/serv[i].z, free, ftcapa);
+    printf("i want to place server %d id %d c %d z %d, c/z %f\n", i, serv[i].id, serv[i].c, serv[i].z, 1. * serv[i].c/serv[i].z);
     // choose the group with lowest guaranteed
     int guar[MAXN];
     for (int j = 0; j < P; j++)
@@ -146,7 +142,6 @@ int main(int argc, char **argv) {
       fgroup[serv[i].id] = idx;
       space[whererow] -= serv[i].z;
       ftcapa += serv[i].c;
-      free -= serv[i].z;
     } else {
       printf("CANNOT PLACE!!\n");
     }
