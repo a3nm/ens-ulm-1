@@ -4,7 +4,8 @@
 #include <map>
 #include <time.h>
 
-// Compile WITHOUT OPTIMS!!
+// g++ -o 400 -O2 470_gives_400.cpp
+// ./400 470 < ../dc.in |tail -1000 | grep -A999999 WOOT | sed 1d > my400
 
 using namespace std;
 
