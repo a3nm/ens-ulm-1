@@ -12,10 +12,10 @@ typedef pair<int,int> pii;
 int main() {
   int R, S, U, P, M;
   vector<pii> serv;
-  char grid[MAXN][MAXN];
+  char grid[MAXN][MAXN]; // row, col
   int capa[MAXN];
   int gcapa[MAXN][MAXN];
-  int fposx[MAXN], fposy[MAXN];
+  int fposr[MAXN], fposc[MAXN], fgroup[MAXN];
 
   scanf("%d", &R);
   scanf("%d", &S);
@@ -39,16 +39,22 @@ int main() {
   reverse(serv.begin(), serv.end());
 
   for (int i = 0; i < M; i++)
-    serv[i].first *= serv.second;
+    serv[i].first *= serv[i].second;
+  
+  for (int i = 0; i < M; i++) {
+    fposr[i] = fposc[i] = fgroup[i] = -1;
+  }
 
   for (int i = 0; i < M; i++) {
     // place serv[i]
   }
 
   // display sol
-  
   for (int i= 0 ; i < M; i++) {
-
+    if (fposr[i] >= 0)
+      printf("%d %d %d\n", fposr[i], fposc[i], fgroup[i]);
+    else
+      printf("x\n");
   }
 
   return 0;
