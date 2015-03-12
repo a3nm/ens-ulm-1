@@ -14,7 +14,8 @@ struct Server{
    int id, z, c;
    Server(int id=0, int z=0, int c=0) : id(id), z(z), c(c) {}
    bool operator< (const Server &s) const{
-      return z/c < s.z/s.c;
+      if (z*s.c == s.z*c) return z < s.z;
+      return z*s.c < s.z*c;
    }
 };
 
