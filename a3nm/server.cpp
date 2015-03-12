@@ -47,6 +47,8 @@ int main() {
   sort(serv.begin(), serv.end());
   reverse(serv.begin(), serv.end());
 
+  // now keep only the servers we will use
+
   for (int i = 0; i < M; i++) {
     fposr[i] = fposc[i] = fgroup[i] = -1;
   }
@@ -106,13 +108,27 @@ int main() {
       fgroup[serv[i].id] = idx;
     }
   }
+
+  
+  int fguar[MAXN];
+  for (int j = 0; j < P; j++)
+    fguar[j] = capa[j];
+  for (int j = 0; j < R; j++)
+    for (int k = 0; k < P; k++)
+      fguar[k] = min(fguar[k], capa[k] - gcapa[j][k]);
+  int mfguar = fguar[0], idx = 0;
+  for (int j = 0; j < P; j++)
+    if (fguar[j] < mfguar) {
+      mfguar = fguar[j];
+    }
+
+  printf("FINAL: %d\n", mfguar);
   
   for (int i = 0; i < R; i++) {
     for (int j = 0; j < S; j++)
       putchar(grid[i][j] == 1? 'X' : (grid[i][j] == 2 ? 'O' : ' '));
     putchar('\n');
   }
-
 
   // display sol
   for (int i= 0 ; i < M; i++) {
