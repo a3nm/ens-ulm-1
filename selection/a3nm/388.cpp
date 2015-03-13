@@ -6,12 +6,13 @@ using namespace std;
 
 #define MAXN 1002
 
-struct Server{
-   int id, z, c;
-   Server(int id=0, int z=0, int c=0) : id(id), z(z), c(c) {}
-   bool operator< (const Server &s) const{
-      return z*s.c*MAXN + s.z < s.z*c*MAXN + z;
-   }
+struct Server {
+  int id, z, c;
+  Server(int id = 0, int z = 0, int c = 0) : id(id), z(z), c(c) {}
+  bool operator< (const Server &s) const {
+    // a/b < c/d iff da < bc and (e, f) < (g, h) with f,h < N iff eN+f < gN+h
+    return z*s.c*MAXN + s.z < s.z*c*MAXN + z;
+  }
 };
 
 int R, S, U, P, M;
