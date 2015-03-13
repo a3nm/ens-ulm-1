@@ -4,17 +4,20 @@
 
 using namespace std;
 
+// generous bound on all possible inputs and sizes
 #define MAXN 1002
 
 struct Server {
   int id, z, c;
   Server(int id = 0, int z = 0, int c = 0) : id(id), z(z), c(c) {}
+  // sort servers by decreasing c/z then decreasing z
   bool operator< (const Server &s) const {
     // a/b < c/d iff da < bc and (e, f) < (g, h) with f,h < N iff eN+f < gN+h
     return z*s.c*MAXN + s.z < s.z*c*MAXN + z;
   }
 };
 
+// declaring those globally means we don't have to initialize them
 int R, S, U, P, M;
 vector<Server> serv;
 char grid[MAXN][MAXN]; // filled grid cells, indexed by row, col
@@ -36,7 +39,7 @@ int main(int argc, char **argv) {
     out.push_back(make_pair(-1, make_pair(-1, -1))); // server is unused
   }
 
-  sort(serv.begin(), serv.end()); // sort servers by desc c/z then desc z
+  sort(serv.begin(), serv.end());
 
   for (int s = 0; s < M; s++) {
     // place server s
@@ -46,13 +49,13 @@ int main(int argc, char **argv) {
     for (int r = 0; r < R; r++)
       for (int g = 0; g < P; g++)
         guar[g] = min(guar[g], capa[g] - gcapa[r][g]); // capa if killing row r
-    int mguar = guar[0], mg = 0; // min and argmin of guar
+    int mguar = guar[0], mg = 0; // min and argmin of guar over all groups
     for (int g = 0; g < P; g++)
       if (guar[g] < mguar) {
         mguar = guar[g];
         mg = g;
       }
-    // g is the group with lowest guar, assign s to mg if we can place it
+    // mg is the group with lowest guar, assign s to mg if we can place it
     vector<pair<int, int> > rows;
     for (int r = 0; r < R; r++)
       rows.push_back(make_pair<int, int>(gcapa[r][mg], r));
@@ -67,7 +70,7 @@ int main(int argc, char **argv) {
         else
           contig = 0;
         if (contig == serv[s].z) {
-          fc = c - (serv[s].z - 1); // we can place s at fr, fc
+          fc = c - (serv[s].z - 1); // we can place s at (fr, fc)
           rr = R; // break out of both loops
           break;
         }
