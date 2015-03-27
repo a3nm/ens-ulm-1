@@ -3,8 +3,8 @@
 #include <algorithm>
 
 using namespace std;
-int s,a,b,c,d,e,n;
-vector<int> r1,r2,c1,c2,size;
+int s,a,b,c,d,e,h,n;
+vector<int> r1,r2,c1,c2,size,ham;
 vector<vector<int> > G;
 
 int qual(int x) {
@@ -14,11 +14,12 @@ int qual(int x) {
 
 //avant
 bool compare_vect(int x, int y){
-    if(size[x] == size[y]){
-      return G[x].size()<G[y].size();
-    } else {
+    if(size[x] != size[y])
       return size[x]>size[y];
-    }
+    if(ham[x]*size[y] != ham[y]*size[x])
+        return ham[x]*size[y] < ham[y]*size[x];
+
+        return r1[x]<r1[y];
 }
 
 //bool compare_vect(int x, int y){
@@ -52,11 +53,12 @@ int main(){
   scanf("%d",&n);
   G.resize(n);
   for(int x=0;x<n;x++){
-  scanf("%d%d%d%d%d%d",&s, &a, &b, &c, &d, &e);
+  scanf("%d%d%d%d%d%d%d",&s, &a, &b, &c, &d, &h, &e);
   r1.push_back(a);
   c1.push_back(b);
   r2.push_back(c);
   c2.push_back(d);
+  ham.push_back(h);
   size.push_back(s);
   for(int y=0;y<e;y++){
     int aa;

@@ -17,6 +17,7 @@ vector<int> r1;
 vector<int> c1;
 vector<int> r2;
 vector<int> c2;
+vector<int> ham;
 
 int main(int argc, char **argv) {
   scanf("%d%d%d%d", &R, &C, &H, &S);
@@ -39,6 +40,7 @@ int main(int argc, char **argv) {
             continue; // not enough ham
           vector<int> nv;
           G.push_back(nv);
+          ham.push_back(nham);
           r1.push_back(r);
           r2.push_back(r + h);
           c1.push_back(c);
@@ -68,7 +70,7 @@ int main(int argc, char **argv) {
 
   printf("%d\n", (int) G.size());
   for (unsigned i = 0; i < G.size(); i++) {
-    printf("%d %d %d %d %d\n", size[i], r1[i], c1[i], r2[i], c2[i]);
+    printf("%d %d %d %d %d %d\n", size[i], r1[i], c1[i], r2[i], c2[i], ham[i]);
     printf("%d\n", (int) G[i].size());
     for (unsigned j = 0; j < G[i].size(); j++) {
       printf("%d\n", G[i][j]);
