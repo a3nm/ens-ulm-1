@@ -16,10 +16,11 @@ int qual(int x) {
 bool compare_vect(int x, int y){
     if(size[x] != size[y])
       return size[x]>size[y];
-    if(ham[x]*size[y] != ham[y]*size[x])
-        return ham[x]*size[y] < ham[y]*size[x];
-
+    if(ham[x] != ham[y])
+        return ham[x] < ham[y];
+    if(r1[x]!=r1[y])
         return r1[x]<r1[y];
+        return c1[x]<c1[y];
 }
 
 //bool compare_vect(int x, int y){
