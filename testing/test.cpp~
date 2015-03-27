@@ -1,0 +1,31 @@
+//avant
+bool compare_vect(vector<int> x, vector<int> y){
+    if(x.size()==y.size()){ 
+        return size[x[0]]<size[y[0]]; 
+    } else 
+    return x.size()<y.size();}
+
+
+
+
+
+//pendant
+sort(G.begin(),G.end(),compare_vect);
+
+vector<bool> taken(G.size(),false);
+vector<int> truc;
+
+vector<bool> choix;
+for(int i=0;i<G.size();i++){
+  if(taken[G[i][0]])continue;
+  truc.push_back(G[i][0]);
+  for(j in G[i]){
+    taken[j]=true;
+  }
+}
+
+
+
+
+return 0;
+}
