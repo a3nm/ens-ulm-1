@@ -48,6 +48,7 @@ int optimize(vector<bool> &taken, vector<int> &sortie) {
 }
 
 int main(){
+  //srand(42);
   scanf("%d",&n);
   G.resize(n);
   for(int x=0;x<n;x++){
@@ -82,8 +83,36 @@ int main(){
 
   printf("SCORE %d\n", score);
 
-//  while (true) {
+//  for (unsigned int ncase = 0; ncase < 1000; ncase++) {
+//    int val = 0;
+//    vector<int> rm;
 //
+//    for (int i= 0 ; i < 10; i++) {
+//      int nn = rand() % G.size();
+//      if (taken[ids[nn]]) {
+//        taken[ids[nn]] = false;
+//        val -= size[ids[nn]];
+//        rm.push_back(nn);
+//      }
+//    }
+//    vector<int> myn;
+//    val += optimize(taken, myn);
+//    if (val < 0) {
+//      // baad
+//      for (unsigned int j= 0; j < myn.size(); j++) {
+//        taken[myn[j]] = false;
+//      }
+//      for (unsigned int j= 0; j < rm.size(); j++) {
+//        taken[ids[rm[j]]] = true;
+//      }
+//    } else {
+//      sortie.clear();
+//      for (unsigned int j = 0; j < G.size(); j++) {
+//        if (!taken[ids[j]]) {
+//          sortie.push_back(ids[j]);
+//        }
+//      }
+//    }
 //  }
 
   // output
