@@ -19,11 +19,11 @@ vector<int> r2;
 vector<int> c2;
 
 //avant
-bool compare_vect(vector<int> x, vector<int> y){
-    if(x.size()==y.size()){
-        return size[x[0]]<size[y[0]];
+bool compare_vect(int x, int y){
+    if(G[x].size()==G[y].size()){
+        return size[x]<size[y];
     } else {
-      return x.size()<y.size();
+      return G[x].size()<G[y].size();
     }
 }
  
@@ -81,16 +81,21 @@ int main(int argc, char **argv) {
   }
 
   //pendant
-  sort(G.begin(),G.end(),compare_vect);
+  vector<int> ids(G.size());
+  for (unsigned i = 0; i < G.size(); i++) {
+  ids[i]=i;
+  }
+  
+  sort(ids.begin(),ids.end(),compare_vect);
    
   vector<bool> taken(G.size(),false);
   vector<int> sortie;
    
   vector<bool> choix;
   for(unsigned int i=0;i<G.size();i++){
-    if(taken[G[i][0]])continue;
-    sortie.push_back(G[i][0]);
-    for(unsigned int j = 0; j < G[i].size(); j++){
+    if(taken[ids[i]])continue;
+    sortie.push_back(ids[i]);
+    for(unsigned int j = 0; j < G[ids[i]].size(); j++){
       taken[j]=true;
     }
   }
