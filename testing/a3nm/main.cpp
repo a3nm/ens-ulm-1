@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     for (int c = 0; c < C; c++)
       for (int w = 1; w <= S; w++)
         for (int h = 1; w * h <= S; h++) {
-          if (c + w >= C || r + h >= R)
+          if (c + w > C || r + h > R)
             continue; // out of bounds
           // count
           int nham = 0;
@@ -56,6 +56,11 @@ int main(int argc, char **argv) {
       if (r2[j] <= r1[i] || r1[j] >= r2[i]
           || c2[j] <= c1[i] || c1[j] >= c2[i])
         continue; // not overlap
+//      if (r1[i] == 0 && c1[i] == 0 && r2[i] == 1 && c2[i] == 8) {
+//        if (r1[j] == 0 && c1[j] == 0 && r2[j] == 1 && c2[j] == 9) {
+//          printf("YESSS %d %d\n", i, j);
+//        }
+//      }
       G[i].push_back(j);
       G[j].push_back(i);
     }
