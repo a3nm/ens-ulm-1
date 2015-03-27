@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     for (int c = 0; c < C; c++)
       for (int w = 1; w <= S; w++)
         for (int h = 1; w * h <= S; h++) {
-          if (c + w >= C || r + h >= C)
+          if (c + w >= C || r + h >= R)
             continue; // out of bounds
           // count
           int nham = 0;
