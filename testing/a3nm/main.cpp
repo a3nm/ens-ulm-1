@@ -18,16 +18,6 @@ vector<int> c1;
 vector<int> r2;
 vector<int> c2;
 
-//avant
-bool compare_vect(int x, int y){
-    if(G[x].size()==G[y].size()){
-        return size[x]<size[y];
-    } else {
-      return G[x].size()<G[y].size();
-    }
-}
- 
-
 int main(int argc, char **argv) {
   scanf("%d%d%d%d", &R, &C, &H, &S);
   
@@ -71,39 +61,13 @@ int main(int argc, char **argv) {
     }
   }
 
-  // output
+  printf("%d\n", (int) G.size());
   for (unsigned i = 0; i < G.size(); i++) {
-    printf("slice %d: %d %d - %d %d: size %d\n", i, r1[i], c1[i], r2[i], c2[i],
-        size[i]);
+    printf("%d %d %d %d %d\n", size[i], r1[i], c1[i], r2[i], c2[i]);
+    printf("%d\n", (int) G[i].size());
     for (unsigned j = 0; j < G[i].size(); j++) {
-      printf("intersects %d: %d %d - %d %d\n", j, r1[j], c1[j], r2[j], c2[j]);
+      printf("%d\n", G[i][j]);
     }
-  }
-
-  //pendant
-  vector<int> ids(G.size());
-  for (unsigned i = 0; i < G.size(); i++) {
-  ids[i]=i;
-  }
-  
-  sort(ids.begin(),ids.end(),compare_vect);
-   
-  vector<bool> taken(G.size(),false);
-  vector<int> sortie;
-   
-  vector<bool> choix;
-  for(unsigned int i=0;i<G.size();i++){
-    if(taken[ids[i]])continue;
-    sortie.push_back(ids[i]);
-    for(unsigned int j = 0; j < G[ids[i]].size(); j++){
-      taken[j]=true;
-    }
-  }
-  
-  // output
-  printf("%d\n", (int) sortie.size());
-  for (unsigned i = 0; i < sortie.size(); i++) {
-    printf("%d %d %d %d\n", r1[i], c1[i], r2[i], c2[i]);
   }
  
   return 0;
