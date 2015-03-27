@@ -18,6 +18,16 @@ vector<int> c1;
 vector<int> r2;
 vector<int> c2;
 
+//avant
+bool compare_vect(vector<int> x, vector<int> y){
+    if(x.size()==y.size()){
+        return size[x[0]]<size[y[0]];
+    } else {
+      return x.size()<y.size();
+    }
+}
+ 
+
 int main(int argc, char **argv) {
   scanf("%d%d%d%d", &R, &C, &H, &S);
   
@@ -27,11 +37,9 @@ int main(int argc, char **argv) {
   for (int r = 0; r < R; r++)
     for (int c = 0; c < C; c++)
       for (int w = 1; w <= S; w++)
-        for (int h = 1; h <= S/w; h++) {
+        for (int h = 1; w * h <= S; h++) {
           if (c + w >= C || r + h >= C)
             continue; // out of bounds
-          if (w * h > S)
-            continue; // too big
           // count
           int nham = 0;
           for (int dr = 0; dr < h; dr++)
@@ -55,6 +63,9 @@ int main(int argc, char **argv) {
       if (r2[i] <= r1[j] || r1[i] >= r2[j]
           || c2[i] <= c1[j] || c1[i] >= c2[j])
         continue; // not overlap
+      if (r2[j] <= r1[i] || r1[j] >= r2[i]
+          || c2[j] <= c1[i] || c1[j] >= c2[i])
+        continue; // not overlap
       G[i].push_back(j);
       G[j].push_back(i);
     }
@@ -66,6 +77,27 @@ int main(int argc, char **argv) {
         size[i]);
   }
 
+  //pendant
+  sort(G.begin(),G.end(),compare_vect);
+   
+  vector<bool> taken(G.size(),false);
+  vector<int> sortie;
+   
+  vector<bool> choix;
+  for(unsigned int i=0;i<G.size();i++){
+    if(taken[G[i][0]])continue;
+    sortie.push_back(G[i][0]);
+    for(unsigned int j = 0; j < G[i].size(); j++){
+      taken[j]=true;
+    }
+  }
+  
+  // output
+  printf("%d\n", (int) sortie.size());
+  for (unsigned i = 0; i < sortie.size(); i++) {
+    printf("%d %d %d %d\n", r1[i], c1[i], r2[i], c2[i]);
+  }
+ 
   return 0;
 }
 
