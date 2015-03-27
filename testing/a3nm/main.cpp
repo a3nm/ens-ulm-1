@@ -75,6 +75,9 @@ int main(int argc, char **argv) {
   for (unsigned i = 0; i < G.size(); i++) {
     printf("slice %d: %d %d - %d %d: size %d\n", i, r1[i], c1[i], r2[i], c2[i],
         size[i]);
+    for (unsigned j = 0; j < G[i].size(); j++) {
+      printf("intersects %d: %d %d - %d %d\n", j, r1[j], c1[j], r2[j], c2[j]);
+    }
   }
 
   //pendant
