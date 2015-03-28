@@ -53,7 +53,14 @@ void calccoverage() {
 }
 
 int chooseda(int b, int t, int a, int r, int c) {
-  int best = -2, bestda = 1;
+  int best = 0, bestda;
+  if (a == 0)
+    bestda = 1;
+  if (a == A)
+    bestda = (rand() % 2) - 1;
+  if (a > 0 && a < A) {
+    bestda = (rand() % 3) - 1;
+  }
   for (int da = -1; da <= 1; da++) {
     if (a <= 1 && da == -1)
       continue; // don't go back down or go down on ground
@@ -79,10 +86,12 @@ int chooseda(int b, int t, int a, int r, int c) {
       bestda = da;
     }
   }
+  printf("best da is %d with score %d\n", bestda, best);
   return bestda;
 }
 
 int main(int argc, char **argv) {
+  srand(42);
   scanf("%d%d%d", &R, &C, &A);
   scanf("%d%d%d%d", &L, &V, &B, &T);
   scanf("%d%d", &rs, &cs);
@@ -91,6 +100,10 @@ int main(int argc, char **argv) {
     scanf("%d%d", &r, &c);
     target[l] = Pt(r, c);
   }
+  for (int r = 0; r < R; r++)
+    for (int c = 0; c < C; c++) {
+      dest[0][r][c] = Pt(r, c);
+    }
   for (int a = 1; a <= A; a++)
     for (int r = 0; r < R; r++)
       for (int c = 0; c < C; c++) {
@@ -116,8 +129,9 @@ int main(int argc, char **argv) {
     // planify loon b
     int r = rs, c = cs, a = 0; // current pos
     for (int t = 0; t < T; t++) {
-      //printf("loon %d at time %d is %d %d\n", b, t, r, c);
+      printf("loon %d at time %d is %d %d %d\n", b, t, a, r, c);
       int bestda = chooseda(b, t, a, r, c);
+      printf("i choose %d\n", bestda);
       // ok, apply bestda
       a += bestda;
       solution[t][b] = bestda;
@@ -130,6 +144,7 @@ int main(int argc, char **argv) {
       }
       if (a > 0 && r >= 0) {
         // update covered targets
+        printf("coverage %d %d\n", r, c);
         for (unsigned int i = 0; i < coverage[r][c].size(); i++) {
           int l = coverage[r][c][i];
           totscore += covered[t+1][l] ? 0 : 1;
