@@ -144,7 +144,7 @@ int planify(int b) {
           dir[t][a][r][c] = bestda;
         }
   }
-  simulate(b, &decide_dyn);
+  totscore += simulate(b, &decide_dyn);
   return totscore;
 }
 
@@ -200,22 +200,23 @@ int main(int argc, char **argv) {
   for (int b = 0; b < B; b++)
     totscore += planify(b);
 
+  printf("score %d\n", totscore);
   print_sol(totscore);
 
-  // srand(42);
-  // while(true) {
-  //   int br = (rand() % B);
-  //   for (int t = 0; t <= T; t++)
-  //     for (int l = 0; l < L; l++)
-  //       covered[t][l] = false;
-  //   // now simulate
-  //   totscore = 0;
-  //   for (int b = 0; b < B; b++) {
-  //     if (br == b)
-  //       continue;
-  //   }
-  //   
-  // }
+  //srand(42);
+  //while(true) {
+  //  int br = (rand() % B);
+  //  for (int t = 0; t <= T; t++)
+  //    for (int l = 0; l < L; l++)
+  //      covered[t][l] = false;
+  //  // now simulate
+  //  totscore = 0;
+  //  for (int b = 0; b < B; b++) {
+  //    if (br == b)
+  //      continue;
+  //    totscore += simulate(b, &decide_sol);
+  //  }
+  //}
 
   return 0;
 }
