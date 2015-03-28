@@ -7,8 +7,9 @@
 using namespace std;
 
 #define MAXN 302
-#define NTARGET 2252
+#define MAXL 2252
 #define NALT 10
+#define MAXT 402
 
 int R, C, A;
 int L, V, B, T;
@@ -23,25 +24,17 @@ vector<int> coverage[MAXN][MAXN];
 
 Pt dest[NALT][MAXN][MAXN]; // where does the wind take us: -1 -1 = out
 
-Pt target[NTARGET];
+Pt target[MAXL];
 
-char map
-
-vector<int> size;
-vector<vector<int> > G;
-vector<int> r1;
-vector<int> c1;
-vector<int> r2;
-vector<int> c2;
-vector<int> ham;
+bool covered[MAXL][MAXT]; // does someone cover target l at time t
 
 int columndist(int c1, int c2) {
   return min(abs(c1 - c2), C - abs(c1 - c2));
 }
 
-int covered(int t, int r, int c) {
-  // does a loon at r c cover t?
-  int u = target[t].r, v = target[t].c;
+int iscovered(int l, int r, int c) {
+  // does a loon at r c cover l?
+  int u = target[l].r, v = target[l].c;
   return ((r - u) * (r - u) + columndist(c, v) * columndist(c, v) <= V*V);
 }
 
@@ -50,9 +43,9 @@ void calccoverage() {
   // compute for each square which targets are covered
   for (int r = 0; r < R; r++)
     for (int c = 0; c < C; c++)
-      for (int t = 0; t < T; t++)
-        if (covered(t, r, c))
-          coverage[r][c].push_back(t);
+      for (int l = 0; l < L; l++)
+        if (iscovered(l, r, c))
+          coverage[r][c].push_back(l);
 }
 
 int main(int argc, char **argv) {
@@ -77,6 +70,11 @@ int main(int argc, char **argv) {
         dest[a][r][c] = Pt(destr, destc);
       }
   calccoverage();
+
+  for (int b = 0; b < B; b++) {
+    // planify loon b
+    for (int n = 0; 
+  }
   
   return 0;
 }
