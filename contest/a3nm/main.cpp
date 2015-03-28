@@ -168,7 +168,7 @@ void print_sol(int totscore) {
 
 int main(int argc, char **argv) {
   int TOREPLAN = atoi(argv[1]);
-  srand(42);
+  srand(time(NULL));
 
   if (argc == 1) {
     printf("syntax: ./a.out NREPLANIFY INPUT OUTPUT\n");
@@ -243,13 +243,13 @@ int main(int argc, char **argv) {
     bool toreplan[MAXB];
     for (int b = 0; b < B; b++)
       toreplan[b] = false;
-    if (TOREPLAN == 1) {
+    //if (TOREPLAN == 1) {
       // if one to replan, do it sequentially
-      toreplan[counter] = true;
-    } else {
+    //  toreplan[counter] = true;
+//    } else {
       for (int numb = 0; numb < TOREPLAN; numb++)
         toreplan[rand() % B] = true;
-    }
+//    }
       for (int t = 0; t <= T; t++)
         for (int l = 0; l < L; l++)
           covered[t][l] = false;
