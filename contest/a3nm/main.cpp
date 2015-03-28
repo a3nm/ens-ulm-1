@@ -197,30 +197,46 @@ int main(int argc, char **argv) {
 
   int totscore = 0;
 
-  for (int b = 0; b < B; b++) {
-    printf("%d\n", b);
-    totscore += planify(b);
+  if (argc > 1) {
+    // read existing file
+
+    FILE *fsol = fopen(argv[1], "r");
+    for (int t = 0; t < T; t++)
+      for (int b = 0; b < B; b++)
+        fscanf(fsol, "%d", &(solution[t][b]));
+    fclose(fsol);
+    for (int b = 0; b < B; b++)
+      totscore += simulate(b, &decide_sol);
+    printf("existing sol has score %d\n", totscore);
+  } else {
+    for (int b = 0; b < B; b++) {
+      printf("%d\n", b);
+      totscore += planify(b);
+    }
+    printf("score %d\n", totscore);
+    print_sol(totscore);
   }
 
-  printf("score %d\n", totscore);
-  print_sol(totscore);
-
-  srand(42);
+  int prevscore;
+  int br = -1;
   while(true) {
-    int br = (rand() % B);
+    br++;
+    br = br % B;
     for (int t = 0; t <= T; t++)
       for (int l = 0; l < L; l++)
         covered[t][l] = false;
     // now simulate
-    int prevscore = totscore;
+    prevscore = totscore;
     totscore = 0;
     for (int b = 0; b < B; b++) {
       if (br == b)
         continue;
       totscore += simulate(b, &decide_sol);
     }
-    planify(br);
-    totscore += simulate(br, &decide_dyn);
+    totscore += planify(br);
+    printf("i replanified %d\n", br);
+    simulate(br, &decide_dyn);
+    printf("score was %d is %d\n", prevscore, totscore);
     if (totscore > prevscore) {
       printf("score %d\n", totscore);
       print_sol(totscore);
