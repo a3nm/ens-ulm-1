@@ -1,5 +1,7 @@
 #!/bin/bash
 
+trap 'kill $(jobs -p)' EXIT
+
 touch output$2
 (./a.out "$1" <(sed 1d input) output$2 < final_round.in >&2) &
 PID=$!
