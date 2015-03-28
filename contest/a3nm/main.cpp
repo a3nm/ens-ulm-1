@@ -135,7 +135,7 @@ int planify(int b) {
               break;
             int rscore = ((a + da) > 0 ? left[t+1][next.r][next.c] : 0) +
               tab[t+1][a+da][next.r][next.c];
-            if (rscore > best || (rscore == best && da > bestda)) {
+            if (rscore > best || (rscore == best && (rand() % 2))) {
               best = rscore;
               bestda = da;
             }
