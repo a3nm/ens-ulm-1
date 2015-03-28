@@ -169,12 +169,13 @@ void print_sol(int totscore) {
 int main(int argc, char **argv) {
   int TOREPLAN = atoi(argv[1]);
   srand(42);
-  output = argv[3];
 
   if (argc == 1) {
     printf("syntax: ./a.out NREPLANIFY INPUT OUTPUT\n");
     return 1;
   }
+  output = argv[3];
+
 
   scanf("%d%d%d", &R, &C, &A);
   scanf("%d%d%d%d", &L, &V, &B, &T);
@@ -273,7 +274,7 @@ int main(int argc, char **argv) {
       print_sol(totscore);
     }
     if (totscore == prevscore) {
-      printf("score was %d is still %d\n", prevscore, totscore);
+      //printf("score was %d is still %d\n", prevscore, totscore);
     }
 
     if (totscore < prevscore) {
