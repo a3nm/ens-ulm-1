@@ -40,16 +40,6 @@ int iscovered(int l, int r, int c) {
 	return ((r - u) * (r - u) + columndist(c, v) * columndist(c, v) <= V*V);
 }
 
-
-void calccoverage() {
-	// compute for each square which targets are covered
-	for (int r = 0; r < R; r++)
-		for (int c = 0; c < C; c++)
-			for (int l = 0; l < L; l++)
-				if (iscovered(l, r, c))
-					coverage[r][c].push_back(l);
-}
-
 Pt position[MAXL];
 int alt[MAXL];
 
@@ -80,7 +70,7 @@ int main(int argc, char **argv) {
 	for (int loon = 0; loon < B; loon++)
 		position[loon] = Pt(rs, cs);
 
-	for (int tour = 0; tour < T; tour++) {
+	for (int tour = 0; tour < T-1; tour++) {
 		for (int loon = 0; loon < B; loon++) {
 			int delta;
 			scanf("%d", &delta);
@@ -93,11 +83,30 @@ int main(int argc, char **argv) {
 		for (int target = 0; target < L; target++) {
 			bool cov = false;
 			for (int loon = 0; loon < B; loon++)
-				if (iscovered(target, position[loon].r, position[loon].c))
+				if (alt[loon] && iscovered(target, position[loon].r, position[loon].c))
 					cov = true;
 			if (cov)
 				score++;
 		}
+//*		//printing
+		char earth[MAXN][MAXN];
+		for (int r = 0; r < R; r++)
+			for (int c = 0; c < C; c++)
+				earth[r][c] = '.';
+
+		for (int l = 0; l < L; l++)
+			earth[target[l].r][target[l].c] = '#';
+
+		for (int b = 0; b < B; b++)
+			earth[position[b].r][position[b].c] = '0'+b;
+
+		for (int r = 0; r < R; r++) {
+			for (int c = 0; c < C; c++)
+				putchar(earth[r][c]);
+			printf("\n");
+		}
+		printf("\n"); 
+//		*/
 	}
 	printf("%d\n", score);
 	return 0;
