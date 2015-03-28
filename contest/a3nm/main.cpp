@@ -29,6 +29,7 @@ Pt dest[MAXA][MAXR][MAXC]; // where does the wind take us: -1 -1 = out
 Pt target[MAXL];
 
 bool covered[MAXT][MAXL]; // does someone cover target l at time t
+int left[MAXT][MAXR][MAXC]; // how many left to cover?
 
 int solution[MAXT][MAXB];
 
@@ -91,15 +92,24 @@ int main(int argc, char **argv) {
   int totscore = 0;
 
   for (int b = 0; b < B; b++) {
-    // planify loon b
-    for (int t = 0; t < T; t++)
+    // compute left
+    for (int t = 0; t <= T; t++)
+      for (int r = 0; r < R; r++)
+        for (int c = 0; c < C; c++) {
+          int cscore = 0;
+          for (unsigned int i = 0; i < coverage[r][c].size(); i++) {
+            int l = coverage[r][c][i];
+            cscore += covered[t][l] ? 0 : 1;
+          }
+          left[t][r][c] = cscore;
+        }
+    // planify loon b, t == T is sentinel
+    for (int t = 0; t <= T; t++)
       for (int a = 0; a <= A; a++)
         for (int r = 0; r < R; r++)
           for (int c = 0; c < C; c++)
             tab[t][a][r][c] = dir[t][a][r][c] = 0;
     for (int t = T-1; t >= 0; t--) {
-      if (!(t % 50))
-        printf("loon %d time %d\n", b, t);
       for (int a = 0; a <= A; a++)
         for (int r = 0; r < R; r++)
           for (int c = 0; c < C; c++) {
@@ -112,14 +122,8 @@ int main(int argc, char **argv) {
               Pt next = dest[a + da][r][c];
               if (next.r < 0)
                 break;
-              int cscore = 0;
-              if (a + da > 0 && next.r >= 0) {
-                for (unsigned int i = 0; i < coverage[next.r][next.c].size(); i++) {
-                  int l = coverage[next.r][next.c][i];
-                  cscore += covered[t+1][l] ? 0 : 1;
-                }
-              }
-              int rscore = cscore + tab[t+1][a+da][next.r][next.c];
+              int rscore = (a > 0 ? left[t+1][r][c] : 0) +
+                tab[t+1][a+da][next.r][next.c];
               if (rscore > best) {
                 best = rscore;
                 bestda = da;
