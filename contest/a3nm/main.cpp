@@ -117,12 +117,6 @@ int planify(int b) {
         }
         left[t][r][c] = cscore;
       }
-  // planify loon b, t == T is sentinel
-  for (int t = 0; t <= T; t++)
-    for (int a = 0; a <= A; a++)
-      for (int r = 0; r < R; r++)
-        for (int c = 0; c < C; c++)
-          tab[t][a][r][c] = dir[t][a][r][c] = 0;
   for (int t = T-1; t >= 0; t--) {
     for (int a = 0; a <= A; a++)
       for (int r = 0; r < R; r++)
