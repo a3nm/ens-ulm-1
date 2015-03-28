@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
                 break;
               int rscore = ((a + da) > 0 ? left[t+1][next.r][next.c] : 0) +
                 tab[t+1][a+da][next.r][next.c];
-              if (rscore > best) {
+              if (rscore > best || (rscore == best && da > bestda)) {
                 best = rscore;
                 bestda = da;
               }
