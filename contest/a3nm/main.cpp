@@ -13,7 +13,7 @@ using namespace std;
 #define MAXT 402
 #define MAXB 55
 
-#define TOREPLAN 2
+char* output;
 
 int R, C, A;
 int L, V, B, T;
@@ -152,7 +152,7 @@ int planify(int b) {
 }
 
 void print_sol(int totscore) {
-  FILE *f = fopen("output", "w");
+  FILE *f = fopen(output, "w");
   
   // print solution
   fprintf(f, "score %d\n", totscore);
@@ -167,6 +167,15 @@ void print_sol(int totscore) {
 }
 
 int main(int argc, char **argv) {
+  int TOREPLAN = atoi(argv[1]);
+  srand(42);
+  output = argv[3];
+
+  if (argc == 1) {
+    printf("syntax: ./a.out NREPLANIFY INPUT OUTPUT\n");
+    return 1;
+  }
+
   scanf("%d%d%d", &R, &C, &A);
   scanf("%d%d%d%d", &L, &V, &B, &T);
   scanf("%d%d", &rs, &cs);
@@ -200,10 +209,10 @@ int main(int argc, char **argv) {
 
   int totscore = 0;
 
-  if (argc > 1) {
+  if (argc > 3) {
     // read existing file
 
-    FILE *fsol = fopen(argv[1], "r");
+    FILE *fsol = fopen(argv[2], "r");
     for (int t = 0; t < T; t++)
       for (int b = 0; b < B; b++)
         fscanf(fsol, "%d", &(solution[t][b]));
@@ -221,7 +230,10 @@ int main(int argc, char **argv) {
   }
 
   int prevscore;
+  int counter = 0;
   while(true) {
+    counter++;
+    counter = counter % B;
     // keep old solution
     for (int t = 0; t <= T; t++)
       for (int b = 0; b <= B; b++)
@@ -230,11 +242,16 @@ int main(int argc, char **argv) {
     bool toreplan[MAXB];
     for (int b = 0; b < B; b++)
       toreplan[b] = false;
-    for (int numb = 0; numb < TOREPLAN; numb++)
-      toreplan[rand() % B] = true;
-    for (int t = 0; t <= T; t++)
-      for (int l = 0; l < L; l++)
-        covered[t][l] = false;
+    if (TOREPLAN == 1) {
+      // if one to replan, do it sequentially
+      toreplan[counter] = true;
+    } else {
+      for (int numb = 0; numb < TOREPLAN; numb++)
+        toreplan[rand() % B] = true;
+    }
+      for (int t = 0; t <= T; t++)
+        for (int l = 0; l < L; l++)
+          covered[t][l] = false;
     // now simulate
     prevscore = totscore;
     totscore = 0;
