@@ -34,6 +34,8 @@ int columndist(int c1, int c2) {
 
 int iscovered(int l, int r, int c) {
 	// does a loon at r c cover l?
+	if (l == -1 && r == -1)
+		return 0;
 	int u = target[l].r, v = target[l].c;
 	return ((r - u) * (r - u) + columndist(c, v) * columndist(c, v) <= V*V);
 }
@@ -73,28 +75,26 @@ int main(int argc, char **argv) {
 					destr = destc = -1; // out
 				dest[a][r][c] = Pt(destr, destc);
 			}
-	if (argc == 1) {
-		printf("Pas de sortie.\n");
-		return 0;
-	}
-	FILE *out = fopen(argv[1], "r");
+	//verifier
 	int score = 0;
 	for (int loon = 0; loon < B; loon++)
 		position[loon] = Pt(rs, cs);
-	for (int iTour = 0; iTour < T; iTour++) {
+
+	for (int tour = 0; tour < T; tour++) {
 		for (int loon = 0; loon < B; loon++) {
 			int delta;
-			fscanf(out, "%d", delta);
+			scanf("%d", &delta);
 			alt[loon] += delta;
-			position[loon] = dest[alt[loon]][position[loon].r][position[loon].c];
+			if (alt[loon] == 0)
+				continue;
+			position[loon] = dest[alt[loon]-1][position[loon].r][position[loon].c];
 		}	
+
 		for (int target = 0; target < L; target++) {
 			bool cov = false;
 			for (int loon = 0; loon < B; loon++)
-				if (iscovered(target, position[loon].r, position[loon].c)) {
+				if (iscovered(target, position[loon].r, position[loon].c))
 					cov = true;
-					break;
-				}
 			if (cov)
 				score++;
 		}
