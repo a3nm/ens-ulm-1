@@ -197,26 +197,35 @@ int main(int argc, char **argv) {
 
   int totscore = 0;
 
-  for (int b = 0; b < B; b++)
+  for (int b = 0; b < B; b++) {
+    printf("%d\n", b);
     totscore += planify(b);
+  }
 
   printf("score %d\n", totscore);
   print_sol(totscore);
 
-  //srand(42);
-  //while(true) {
-  //  int br = (rand() % B);
-  //  for (int t = 0; t <= T; t++)
-  //    for (int l = 0; l < L; l++)
-  //      covered[t][l] = false;
-  //  // now simulate
-  //  totscore = 0;
-  //  for (int b = 0; b < B; b++) {
-  //    if (br == b)
-  //      continue;
-  //    totscore += simulate(b, &decide_sol);
-  //  }
-  //}
+  srand(42);
+  while(true) {
+    int br = (rand() % B);
+    for (int t = 0; t <= T; t++)
+      for (int l = 0; l < L; l++)
+        covered[t][l] = false;
+    // now simulate
+    int prevscore = totscore;
+    totscore = 0;
+    for (int b = 0; b < B; b++) {
+      if (br == b)
+        continue;
+      totscore += simulate(b, &decide_sol);
+    }
+    planify(br);
+    totscore += simulate(br, &decide_dyn);
+    if (totscore > prevscore) {
+      printf("score %d\n", totscore);
+      print_sol(totscore);
+    }
+  }
 
   return 0;
 }
