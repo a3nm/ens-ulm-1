@@ -236,9 +236,8 @@ int main(int argc, char **argv) {
     totscore += planify(br);
     printf("i replanified %d\n", br);
     simulate(br, &decide_dyn);
-    printf("score was %d is %d\n", prevscore, totscore);
     if (totscore > prevscore) {
-      printf("score %d\n", totscore);
+      printf("score was %d is %d\n", prevscore, totscore);
       print_sol(totscore);
     }
   }
