@@ -29,7 +29,6 @@ Pt dest[MAXA][MAXR][MAXC]; // where does the wind take us: -1 -1 = out
 Pt target[MAXL];
 
 bool covered[MAXT][MAXL]; // does someone cover target l at time t
-int left[MAXT][MAXR][MAXC]; // how many left to cover?
 
 int solution[MAXT][MAXB];
 
@@ -57,7 +56,48 @@ void calccoverage() {
           coverage[r][c].push_back(l);
 }
 
+int chooseda(int b, int t, int a, int r, int c) {
+  int best = 0, bestda;
+  if (a == 0)
+    bestda = 1;
+  if (a == 1)
+    bestda = rand() % 2;
+  if (a == A)
+    bestda = (rand() % 2) - 1;
+  if (a > 1 && a < A) {
+    bestda = (rand() % 3) - 1;
+  }
+  for (int da = -1; da <= 1; da++) {
+    if (a <= 1 && da == -1)
+      continue; // don't go back down or go down on ground
+    if (a + da > A)
+      continue; // can't go too high
+
+    // compute improvement
+    Pt next = dest[a + da][r][c];
+    int cscore = 0;
+    // loons on ground and loons out don't help
+    if (a + da > 0 && next.r >= 0) {
+      for (unsigned int i = 0; i < coverage[next.r][next.c].size(); i++) {
+        int l = coverage[next.r][next.c][i];
+        cscore += covered[t+1][l] ? 0 : 1;
+      }
+    }
+    if (next.r < 0) {
+      // out is BAD
+      cscore = -1;
+    }
+    if (cscore > best) {
+      best = cscore;
+      bestda = da;
+    }
+  }
+  printf("best da is %d with score %d\n", bestda, best);
+  return bestda;
+}
+
 int main(int argc, char **argv) {
+  srand(42);
   scanf("%d%d%d", &R, &C, &A);
   scanf("%d%d%d%d", &L, &V, &B, &T);
   scanf("%d%d", &rs, &cs);
@@ -92,24 +132,15 @@ int main(int argc, char **argv) {
   int totscore = 0;
 
   for (int b = 0; b < B; b++) {
-    // compute left
-    for (int t = 0; t <= T; t++)
-      for (int r = 0; r < R; r++)
-        for (int c = 0; c < C; c++) {
-          int cscore = 0;
-          for (unsigned int i = 0; i < coverage[r][c].size(); i++) {
-            int l = coverage[r][c][i];
-            cscore += covered[t][l] ? 0 : 1;
-          }
-          left[t][r][c] = cscore;
-        }
-    // planify loon b, t == T is sentinel
-    for (int t = 0; t <= T; t++)
+    // planify loon b
+    for (int t = 0; t < T; t++)
       for (int a = 0; a <= A; a++)
         for (int r = 0; r < R; r++)
           for (int c = 0; c < C; c++)
             tab[t][a][r][c] = dir[t][a][r][c] = 0;
     for (int t = T-1; t >= 0; t--) {
+      if (!(t % 50))
+        printf("loon %d time %d\n", b, t);
       for (int a = 0; a <= A; a++)
         for (int r = 0; r < R; r++)
           for (int c = 0; c < C; c++) {
@@ -122,8 +153,14 @@ int main(int argc, char **argv) {
               Pt next = dest[a + da][r][c];
               if (next.r < 0)
                 break;
-              int rscore = (a > 0 ? left[t+1][r][c] : 0) +
-                tab[t+1][a+da][next.r][next.c];
+              int cscore = 0;
+              if (a + da > 0 && next.r >= 0) {
+                for (unsigned int i = 0; i < coverage[next.r][next.c].size(); i++) {
+                  int l = coverage[next.r][next.c][i];
+                  cscore += covered[t+1][l] ? 0 : 1;
+                }
+              }
+              int rscore = cscore + tab[t+1][a+da][next.r][next.c];
               if (rscore > best) {
                 best = rscore;
                 bestda = da;
