@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
               Pt next = dest[a + da][r][c];
               if (next.r < 0)
                 break;
-              int rscore = ((a + da) > 0 ? left[t+1][r][c] : 0) +
+              int rscore = ((a + da) > 0 ? left[t+1][next.r][next.c] : 0) +
                 tab[t+1][a+da][next.r][next.c];
               if (rscore > best) {
                 best = rscore;
