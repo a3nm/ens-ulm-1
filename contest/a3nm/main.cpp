@@ -57,6 +57,112 @@ void calccoverage() {
           coverage[r][c].push_back(l);
 }
 
+int decide_dyn(int b, int t, int a, int r, int c) {
+  return dir[t][a][r][c];
+}
+
+int decide_sol(int b, int t, int a, int r, int c) {
+  return solution[t][b];
+}
+
+int simulate(int b, int (*decide)(int, int, int, int, int)) {
+  // return totscore
+  //
+  // ok now follow the best
+  int totscore = 0;
+  int r = rs, c = cs, a = 0;
+  for (int t = 0; t < T; t++) {
+    //printf("loon %d at time %d is %d %d %d\n", b, t, a, r, c);
+    int bestda = (*decide)(b, t, a, r, c);
+    //printf("i choose %d\n", bestda);
+    // ok, apply bestda
+    a += bestda;
+    solution[t][b] = bestda;
+    Pt next = dest[a][r][c];
+    r = next.r;
+    c = next.c;
+    if (r < 0) {
+      //printf("FAILLL\n");
+      break; // loon is out
+    }
+    if (a > 0 && r >= 0) {
+      // update covered targets
+      //printf("coverage %d %d\n", r, c);
+      for (unsigned int i = 0; i < coverage[r][c].size(); i++) {
+        int l = coverage[r][c][i];
+        totscore += covered[t+1][l] ? 0 : 1;
+        covered[t+1][l] = true;
+      }
+    }
+  }
+  return totscore;
+}
+
+
+int planify(int b) {
+  // planify one loon, b, based on the info of covered
+  // return totscore
+  int totscore = 0;
+  // compute left
+  for (int t = 0; t <= T; t++)
+    for (int r = 0; r < R; r++)
+      for (int c = 0; c < C; c++) {
+        int cscore = 0;
+        for (unsigned int i = 0; i < coverage[r][c].size(); i++) {
+          int l = coverage[r][c][i];
+          cscore += covered[t][l] ? 0 : 1;
+        }
+        left[t][r][c] = cscore;
+      }
+  // planify loon b, t == T is sentinel
+  for (int t = 0; t <= T; t++)
+    for (int a = 0; a <= A; a++)
+      for (int r = 0; r < R; r++)
+        for (int c = 0; c < C; c++)
+          tab[t][a][r][c] = dir[t][a][r][c] = 0;
+  for (int t = T-1; t >= 0; t--) {
+    for (int a = 0; a <= A; a++)
+      for (int r = 0; r < R; r++)
+        for (int c = 0; c < C; c++) {
+          int bestda = 0, best = 0;
+          for (int da = -1; da <= 1; da++) {
+            if (a <= 1 && da < 0)
+              continue;
+            if (a + da > A)
+              continue;
+            Pt next = dest[a + da][r][c];
+            if (next.r < 0)
+              break;
+            int rscore = ((a + da) > 0 ? left[t+1][next.r][next.c] : 0) +
+              tab[t+1][a+da][next.r][next.c];
+            if (rscore > best || (rscore == best && da > bestda)) {
+              best = rscore;
+              bestda = da;
+            }
+          }
+          tab[t][a][r][c] = best;
+          dir[t][a][r][c] = bestda;
+        }
+  }
+  simulate(b, &decide_dyn);
+  return totscore;
+}
+
+void print_sol(int totscore) {
+  FILE *f = fopen("output", "w");
+  
+  // print solution
+  fprintf(f, "score %d\n", totscore);
+
+  for (int t = 0; t < T; t++) {
+    for (int b = 0; b < B; b++)
+      fprintf(f, "%d ", solution[t][b]);
+    fprintf(f, "\n");
+  }
+
+  fclose(f);
+}
+
 int main(int argc, char **argv) {
   scanf("%d%d%d", &R, &C, &A);
   scanf("%d%d%d%d", &L, &V, &B, &T);
@@ -91,86 +197,26 @@ int main(int argc, char **argv) {
 
   int totscore = 0;
 
-  for (int b = 0; b < B; b++) {
-    // compute left
-    for (int t = 0; t <= T; t++)
-      for (int r = 0; r < R; r++)
-        for (int c = 0; c < C; c++) {
-          int cscore = 0;
-          for (unsigned int i = 0; i < coverage[r][c].size(); i++) {
-            int l = coverage[r][c][i];
-            cscore += covered[t][l] ? 0 : 1;
-          }
-          left[t][r][c] = cscore;
-        }
-    // planify loon b, t == T is sentinel
-    for (int t = 0; t <= T; t++)
-      for (int a = 0; a <= A; a++)
-        for (int r = 0; r < R; r++)
-          for (int c = 0; c < C; c++)
-            tab[t][a][r][c] = dir[t][a][r][c] = 0;
-    for (int t = T-1; t >= 0; t--) {
-      for (int a = 0; a <= A; a++)
-        for (int r = 0; r < R; r++)
-          for (int c = 0; c < C; c++) {
-            int bestda = 0, best = 0;
-            for (int da = -1; da <= 1; da++) {
-              if (a <= 1 && da < 0)
-                continue;
-              if (a + da > A)
-                continue;
-              Pt next = dest[a + da][r][c];
-              if (next.r < 0)
-                break;
-              int rscore = ((a + da) > 0 ? left[t+1][next.r][next.c] : 0) +
-                tab[t+1][a+da][next.r][next.c];
-              if (rscore > best || (rscore == best && da > bestda)) {
-                best = rscore;
-                bestda = da;
-              }
-            }
-            tab[t][a][r][c] = best;
-            dir[t][a][r][c] = bestda;
-          }
-    }
-    // ok now follow the best
-    int r = rs, c = cs, a = 0;
-    for (int t = 0; t < T; t++) {
-      printf("loon %d at time %d is %d %d %d\n", b, t, a, r, c);
-      int bestda = dir[t][a][r][c];
-      printf("i choose %d\n", bestda);
-      // ok, apply bestda
-      a += bestda;
-      solution[t][b] = bestda;
-      Pt next = dest[a][r][c];
-      r = next.r;
-      c = next.c;
-      if (r < 0) {
-        printf("FAILLL\n");
-        break; // loon is out
-      }
-      if (a > 0 && r >= 0) {
-        // update covered targets
-        printf("coverage %d %d\n", r, c);
-        for (unsigned int i = 0; i < coverage[r][c].size(); i++) {
-          int l = coverage[r][c][i];
-          totscore += covered[t+1][l] ? 0 : 1;
-          covered[t+1][l] = true;
-        }
-      }
-    }
-  }
+  for (int b = 0; b < B; b++)
+    totscore += planify(b);
 
-  // print solution
-  printf("score %d\n", totscore);
+  print_sol(totscore);
 
-  for (int t = 0; t < T; t++) {
-    for (int b = 0; b < B; b++)
-      printf("%d ", solution[t][b]);
-    printf("\n");
-  }
-    
+  // srand(42);
+  // while(true) {
+  //   int br = (rand() % B);
+  //   for (int t = 0; t <= T; t++)
+  //     for (int l = 0; l < L; l++)
+  //       covered[t][l] = false;
+  //   // now simulate
+  //   totscore = 0;
+  //   for (int b = 0; b < B; b++) {
+  //     if (br == b)
+  //       continue;
+  //   }
+  //   
+  // }
+
   return 0;
 }
-
 
