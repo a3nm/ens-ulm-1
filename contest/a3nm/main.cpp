@@ -52,6 +52,36 @@ void calccoverage() {
           coverage[r][c].push_back(l);
 }
 
+int chooseda(int b, int t, int a, int r, int c) {
+  int best = -2, bestda = 1;
+  for (int da = -1; da <= 1; da++) {
+    if (a <= 1 && da == -1)
+      continue; // don't go back down or go down on ground
+    if (a + da > A)
+      continue; // can't go too high
+
+    // compute improvement
+    Pt next = dest[a + da][r][c];
+    int cscore = 0;
+    // loons on ground and loons out don't help
+    if (a + da > 0 && next.r >= 0) {
+      for (unsigned int i = 0; i < coverage[next.r][next.c].size(); i++) {
+        int l = coverage[next.r][next.c][i];
+        cscore += covered[t+1][l] ? 0 : 1;
+      }
+    }
+    if (next.r < 0) {
+      // out is BAD
+      cscore = -1;
+    }
+    if (cscore > best) {
+      best = cscore;
+      bestda = da;
+    }
+  }
+  return bestda;
+}
+
 int main(int argc, char **argv) {
   scanf("%d%d%d", &R, &C, &A);
   scanf("%d%d%d%d", &L, &V, &B, &T);
@@ -61,7 +91,7 @@ int main(int argc, char **argv) {
     scanf("%d%d", &r, &c);
     target[l] = Pt(r, c);
   }
-  for (int a = 0; a < A; a++)
+  for (int a = 1; a <= A; a++)
     for (int r = 0; r < R; r++)
       for (int c = 0; c < C; c++) {
         int dr, dc;
@@ -87,32 +117,7 @@ int main(int argc, char **argv) {
     int r = rs, c = cs, a = 0; // current pos
     for (int t = 0; t < T; t++) {
       //printf("loon %d at time %d is %d %d\n", b, t, r, c);
-      int best = -2, bestda = 0;
-      for (int da = -1; da <= 1; da++) {
-        if (a <= 1 && da == -1)
-          continue; // don't go back down or go down on ground
-        if (a + da > A)
-          continue; // can't go too high
-
-        // compute improvement
-        Pt next = dest[a + da][r][c];
-        int cscore = 0;
-        // loons on ground and loons out don't help
-        if (a + da > 0 && next.r >= 0) {
-          for (unsigned int i = 0; i < coverage[next.r][next.c].size(); i++) {
-            int l = coverage[next.r][next.c][i];
-            cscore += covered[t+1][l] ? 0 : 1;
-          }
-        }
-        if (next.r < 0) {
-          // out is BAD
-          cscore = -1;
-        }
-        if (cscore > best) {
-          best = cscore;
-          bestda = da;
-        }
-      }
+      int bestda = chooseda(b, t, a, r, c);
       // ok, apply bestda
       a += bestda;
       solution[t][b] = bestda;
