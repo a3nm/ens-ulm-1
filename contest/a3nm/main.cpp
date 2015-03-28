@@ -56,48 +56,7 @@ void calccoverage() {
           coverage[r][c].push_back(l);
 }
 
-int chooseda(int b, int t, int a, int r, int c) {
-  int best = 0, bestda;
-  if (a == 0)
-    bestda = 1;
-  if (a == 1)
-    bestda = rand() % 2;
-  if (a == A)
-    bestda = (rand() % 2) - 1;
-  if (a > 1 && a < A) {
-    bestda = (rand() % 3) - 1;
-  }
-  for (int da = -1; da <= 1; da++) {
-    if (a <= 1 && da == -1)
-      continue; // don't go back down or go down on ground
-    if (a + da > A)
-      continue; // can't go too high
-
-    // compute improvement
-    Pt next = dest[a + da][r][c];
-    int cscore = 0;
-    // loons on ground and loons out don't help
-    if (a + da > 0 && next.r >= 0) {
-      for (unsigned int i = 0; i < coverage[next.r][next.c].size(); i++) {
-        int l = coverage[next.r][next.c][i];
-        cscore += covered[t+1][l] ? 0 : 1;
-      }
-    }
-    if (next.r < 0) {
-      // out is BAD
-      cscore = -1;
-    }
-    if (cscore > best) {
-      best = cscore;
-      bestda = da;
-    }
-  }
-  printf("best da is %d with score %d\n", bestda, best);
-  return bestda;
-}
-
 int main(int argc, char **argv) {
-  srand(42);
   scanf("%d%d%d", &R, &C, &A);
   scanf("%d%d%d%d", &L, &V, &B, &T);
   scanf("%d%d", &rs, &cs);
