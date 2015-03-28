@@ -6,10 +6,12 @@
 
 using namespace std;
 
-#define MAXN 302
+#define MAXR 77
+#define MAXC 302
 #define MAXL 2252
-#define NALT 10
+#define MAXA 10
 #define MAXT 402
+#define MAXB 55
 
 int R, C, A;
 int L, V, B, T;
@@ -20,13 +22,15 @@ struct Pt{
   Pt(int r=0, int c=0) : r(r), c(c) {}
 };
 
-vector<int> coverage[MAXN][MAXN];
+vector<int> coverage[MAXR][MAXC]; // which targets are covered in r c
 
-Pt dest[NALT][MAXN][MAXN]; // where does the wind take us: -1 -1 = out
+Pt dest[MAXA][MAXR][MAXC]; // where does the wind take us: -1 -1 = out
 
 Pt target[MAXL];
 
-bool covered[MAXL][MAXT]; // does someone cover target l at time t
+bool covered[MAXT][MAXL]; // does someone cover target l at time t
+
+int solution[MAXT][MAXB];
 
 int columndist(int c1, int c2) {
   return min(abs(c1 - c2), C - abs(c1 - c2));
@@ -50,12 +54,12 @@ void calccoverage() {
 
 int main(int argc, char **argv) {
   scanf("%d%d%d", &R, &C, &A);
-  scanf("%d%d%d", &L, &V, &B, &T);
+  scanf("%d%d%d%d", &L, &V, &B, &T);
   scanf("%d%d", &rs, &cs);
-  for (int i = 0; i < L; i++) {
+  for (int l = 0; l < L; l++) {
     int r, c;
     scanf("%d%d", &r, &c);
-    target[i] = Pt(r, c);
+    target[l] = Pt(r, c);
   }
   for (int a = 0; a < A; a++)
     for (int r = 0; r < R; r++)
@@ -70,12 +74,75 @@ int main(int argc, char **argv) {
         dest[a][r][c] = Pt(destr, destc);
       }
   calccoverage();
+  //for (int r = 0; r < R; r++) {
+  //  for (int c = 0; c < C; c++)
+  //    printf("%d ", (int) coverage[r][c].size());
+  //  printf("\n");
+  //}
+
+  int totscore = 0;
 
   for (int b = 0; b < B; b++) {
     // planify loon b
-    for (int n = 0; 
+    int r = rs, c = cs, a = 0; // current pos
+    for (int t = 0; t < T; t++) {
+      //printf("loon %d at time %d is %d %d\n", b, t, r, c);
+      int best = -2, bestda = 0;
+      for (int da = -1; da <= 1; da++) {
+        if (a <= 1 && da == -1)
+          continue; // don't go back down or go down on ground
+        if (a + da > A)
+          continue; // can't go too high
+
+        // compute improvement
+        Pt next = dest[a + da][r][c];
+        int cscore = 0;
+        // loons on ground and loons out don't help
+        if (a + da > 0 && next.r >= 0) {
+          for (unsigned int i = 0; i < coverage[next.r][next.c].size(); i++) {
+            int l = coverage[next.r][next.c][i];
+            cscore += covered[t+1][l] ? 0 : 1;
+          }
+        }
+        if (next.r < 0) {
+          // out is BAD
+          cscore = -1;
+        }
+        if (cscore > best) {
+          best = cscore;
+          bestda = da;
+        }
+      }
+      // ok, apply bestda
+      a += bestda;
+      solution[t][b] = bestda;
+      Pt next = dest[a][r][c];
+      r = next.r;
+      c = next.c;
+      if (r < 0) {
+        printf("FAILLL\n");
+        break; // loon is out
+      }
+      if (a > 0 && r >= 0) {
+        // update covered targets
+        for (unsigned int i = 0; i < coverage[r][c].size(); i++) {
+          int l = coverage[r][c][i];
+          totscore += covered[t+1][l] ? 0 : 1;
+          covered[t+1][l] = true;
+        }
+      }
+    }
   }
-  
+
+  // print solution
+  printf("score %d\n", totscore);
+
+  for (int t = 0; t < T; t++) {
+    for (int b = 0; b < B; b++)
+      printf("%d ", solution[t][b]);
+    printf("\n");
+  }
+    
   return 0;
 }
 
