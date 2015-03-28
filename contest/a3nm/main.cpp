@@ -13,6 +13,8 @@ using namespace std;
 #define MAXT 402
 #define MAXB 55
 
+#define TOREPLAN 2
+
 int R, C, A;
 int L, V, B, T;
 int rs, cs;
@@ -32,6 +34,7 @@ bool covered[MAXT][MAXL]; // does someone cover target l at time t
 int left[MAXT][MAXR][MAXC]; // how many left to cover?
 
 int solution[MAXT][MAXB];
+int oldsol[MAXT][MAXB];
 
 // for dynamic
 int tab[MAXT][MAXA][MAXR][MAXC];
@@ -218,10 +221,17 @@ int main(int argc, char **argv) {
   }
 
   int prevscore;
-  int br = -1;
   while(true) {
-    br++;
-    br = br % B;
+    // keep old solution
+    for (int t = 0; t <= T; t++)
+      for (int b = 0; b <= B; b++)
+        oldsol[t][b] = solution[t][b];
+    // choice of replanify
+    bool toreplan[MAXB];
+    for (int b = 0; b < B; b++)
+      toreplan[b] = false;
+    for (int numb = 0; numb < TOREPLAN; numb++)
+      toreplan[rand() % B] = true;
     for (int t = 0; t <= T; t++)
       for (int l = 0; l < L; l++)
         covered[t][l] = false;
@@ -229,16 +239,33 @@ int main(int argc, char **argv) {
     prevscore = totscore;
     totscore = 0;
     for (int b = 0; b < B; b++) {
-      if (br == b)
+      if (toreplan[b])
         continue;
       totscore += simulate(b, &decide_sol);
     }
-    totscore += planify(br);
-    printf("i replanified %d\n", br);
-    simulate(br, &decide_dyn);
+    for (int b = 0; b < B; b++) {
+      if (!toreplan[b])
+        continue;
+      printf("i replanify %d\n", b);
+      totscore += planify(b);
+      simulate(b, &decide_dyn);
+    }
+
     if (totscore > prevscore) {
       printf("score was %d is %d\n", prevscore, totscore);
       print_sol(totscore);
+    }
+    if (totscore == prevscore) {
+      printf("score was %d is still %d\n", prevscore, totscore);
+    }
+
+    if (totscore < prevscore) {
+      printf("score was %d is now %d, rollback!!\n", prevscore, totscore);
+      // rollback
+      for (int t = 0; t <= T; t++)
+        for (int b = 0; b <= B; b++)
+          solution[t][b] = oldsol[t][b];
+      totscore = prevscore;
     }
   }
 
