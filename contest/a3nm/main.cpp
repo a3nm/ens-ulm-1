@@ -56,9 +56,11 @@ int chooseda(int b, int t, int a, int r, int c) {
   int best = 0, bestda;
   if (a == 0)
     bestda = 1;
+  if (a == 1)
+    bestda = rand() % 2;
   if (a == A)
     bestda = (rand() % 2) - 1;
-  if (a > 0 && a < A) {
+  if (a > 1 && a < A) {
     bestda = (rand() % 3) - 1;
   }
   for (int da = -1; da <= 1; da++) {
