@@ -274,6 +274,7 @@ int main(int argc, char **argv) {
       print_sol(totscore);
     }
     if (totscore == prevscore) {
+      print_sol(totscore);
       //printf("score was %d is still %d\n", prevscore, totscore);
     }
 
