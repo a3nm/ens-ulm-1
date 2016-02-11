@@ -13,7 +13,7 @@
 #define MAXT 150000
 #define MAXL 201
 
-#define MAXEXAM 5
+#define MAXEXAM 2
 
 // estimated useful capa per roundtrip
 #define ESTIMATED_CAPA 60.
@@ -252,6 +252,7 @@ int execute(int d, int o, bool real, int myloadf(int, int, vector<int> &, bool))
   busy_until[d] = t + drone_time;
 
   // is order complete?
+  // TODO: last assigned drone may not be the last to complete order!!
   if (order_is_complete(o)) {
     Ocompl[o] = busy_until[d];
     return Ocompl[o];
@@ -360,6 +361,8 @@ int main() {
 
   t = 0;
 
+  int SCORE=0;
+
   while (t <= T) {
     //printf("at time %d\n", t);
     int first_avail = -1;
@@ -404,7 +407,12 @@ int main() {
     }
     // assign d to help towards o
    // printf("drone %d will help for order %d\n", first_avail, bestorder);
-    execute(first_avail, bestorder, 1, &wload);
+    int rval = execute(first_avail, bestorder, 1, &wload);
+    if (rval >= 0) {
+      SCORE += ceil(100*((double) (T - rval))/T);
+      //fprintf(stderr, "finished objective %d at time %d\n", bestorder, rval);
+    }
   }
+  fprintf(stderr, "SCORE %d\n", SCORE);
   return 0;
 }
