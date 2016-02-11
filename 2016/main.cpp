@@ -1,5 +1,7 @@
 #include<cstdio>
+#include<cstring>
 #include<cmath>
+#include<cassert>
 #include<vector>
 #include<algorithm>
 
@@ -148,11 +150,17 @@ void execute(int d, int o) {
 
   // objects sorted, RLE
 
-  int last_type = -1, n_last_type = 0;
+  int last_type = objects[0], n_last_type = 0;
+  assert(last_type != P);
   int drone_time = 0;
   drone_time += dist(dx[d], dy[d], Wx[best_w], Wy[best_w]);
 
   vector<pair<int, int> > act;
+
+  printf("drone %d warehouse %d objective %d will load:\n", d, best_w, o);
+  for (unsigned int i = 0; i < objects.size(); i++) {
+    printf("%d\n", objects[i]);
+  }
 
   for (unsigned int i = 0; i < objects.size(); i++) {
     // go there and load
@@ -177,7 +185,8 @@ void execute(int d, int o) {
   for (unsigned int i = 0; i < act.size(); i++) {
     pair<int, int> myp = act[i];
     printf("%d U %d %d %d\n", d, o, myp.first, myp.second);
-    Order[o][last_type] -= n_last_type;
+    Order[o][myp.first] -= myp.second;
+    printf("order %d for type %d now wants %d\n", o, myp.first, Order[o][myp.first]);
     drone_time += 1;
   }
 
@@ -199,6 +208,9 @@ int main() {
   printf("%d\n", W);
   for (int w = 0; w < W; w++) {
     scanf("%d%d", &(Wx[w]), &(Wy[w]));
+    for (int p = 0; p < P; p++) {
+      scanf("%d", &(Store[w][p]));
+    }
   }
   scanf("%d", &O);
   for (int i = 0; i < O; i++)
@@ -237,15 +249,17 @@ int main() {
       continue;
     }
     int besttime = T, bestorder = -1;
-    printf("O is %d\n", O);
+    //printf("O is %d\n", O);
     for (int o = 0; o < O; o++) {
-      printf("ocompl %d %d\n", o, Ocompl[o]);
+      //printf("ocompl %d %d\n", o, Ocompl[o]);
       if (Ocompl[o] < 0) {
-        printf("considering incompl order %d\n", o);
+        //printf("considering incompl order %d\n", o);
         int torder = time_to_complete(o);
         if (torder < besttime) {
           bestorder = o;
+          besttime = torder;
         }
+        //printf("bestorder is %d\n", bestorder);
       }
     }
     // assign d to help towards o
