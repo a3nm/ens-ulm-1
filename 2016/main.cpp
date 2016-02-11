@@ -63,6 +63,9 @@ int time_to_complete(int o, int d) {
 
 int dyn[MAXL][MAXP][MAXL];
 int cpstore[MAXP];
+int vu[MAXL][MAXP][MAXL];
+
+int TOUR=1;
 
 int sacADos(int cap, int pos, int rp)
 {
@@ -73,8 +76,9 @@ int sacADos(int cap, int pos, int rp)
 	
 	int& vc = dyn[cap][pos][rp];
 	
-	if(!vc)
+	if(vu[cap][pos][rp]!=TOUR)
 	{
+		vu[cap][pos][rp]=TOUR;
 		vc = sacADos(cap, pos+1, cpstore[pos+1]);
 		if(cap >= Ps[pos])
 			vc = max(vc, sacADos(cap-Ps[pos], pos, rp-1)+Ps[pos]);
@@ -84,11 +88,13 @@ int sacADos(int cap, int pos, int rp)
 }
 
 int wload(int o, int w, vector<int>& res) {
-	memset(dyn, 0, sizeof(dyn));
+	TOUR++;
+	//memset(dyn, 0, sizeof(dyn));
 	
-	/*
+	
 	for(int i = 0; i < MAXP; i++)
 		cpstore[i]=min(L, min(Store[w][i], Order[o][i]));
+		/*
 	
 	int curL = L;
 	int rv=0;
@@ -178,10 +184,10 @@ void execute(int d, int o) {
 
   vector<pair<int, int> > act;
 
-  printf("drone %d warehouse %d objective %d will load:\n", d, best_w, o);
-  for (unsigned int i = 0; i < objects.size(); i++) {
-    printf("%d\n", objects[i]);
-  }
+  //printf("drone %d warehouse %d objective %d will load:\n", d, best_w, o);
+  //for (unsigned int i = 0; i < objects.size(); i++) {
+  //  printf("%d\n", objects[i]);
+  //}
 
   for (unsigned int i = 0; i < objects.size(); i++) {
     // go there and load
@@ -207,7 +213,7 @@ void execute(int d, int o) {
     pair<int, int> myp = act[i];
     printf("%d D %d %d %d\n", d, o, myp.first, myp.second);
     Order[o][myp.first] -= myp.second;
-    printf("order %d for type %d now wants %d\n", o, myp.first, Order[o][myp.first]);
+   // printf("order %d for type %d now wants %d\n", o, myp.first, Order[o][myp.first]);
     drone_time += 1;
   }
 
@@ -226,7 +232,7 @@ int main() {
   for (int p = 0; p < P; p++)
     scanf("%d", &(Ps[p]));
   scanf("%d", &W);
-  printf("%d\n", W);
+  //printf("%d\n", W);
   for (int w = 0; w < W; w++) {
     scanf("%d%d", &(Wx[w]), &(Wy[w]));
     for (int p = 0; p < P; p++) {
@@ -258,7 +264,7 @@ int main() {
   t = 0;
 
   while (t <= T) {
-    printf("at time %d\n", t);
+    //printf("at time %d\n", t);
     int first_avail = -1;
     for (int d = 0; d < D; d++)
       if (busy_until[d] <= t) {
@@ -285,11 +291,11 @@ int main() {
     }
     if (bestorder == -1) {
       // we finished?!
-      printf("finished!!\n");
+      //printf("finished!!\n");
       break;
     }
     // assign d to help towards o
-    printf("drone %d will help for order %d\n", first_avail, bestorder);
+   // printf("drone %d will help for order %d\n", first_avail, bestorder);
     execute(first_avail, bestorder);
   }
   return 0;
