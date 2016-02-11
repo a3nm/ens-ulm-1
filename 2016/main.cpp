@@ -14,7 +14,7 @@
 #define MAXL 201
 
 // estimated useful capa per roundtrip
-#define ESTIMATED_CAPA 50.
+#define ESTIMATED_CAPA 60.
 
 using namespace std;
 
@@ -58,6 +58,7 @@ int order_score(int o, int d) {
 }
 
 int time_to_complete(int o, int d) {
+  /*
   // backup the crap
   int bakorder[MAXP];
   for (int p = 0; p < P; p++)
@@ -79,11 +80,12 @@ int time_to_complete(int o, int d) {
     dx[d] = bakdx[d];
     dy[d] = bakdy[d];
   }
+  */
   return order_score(o, d);
 }
 
 int dyn[MAXL][MAXP][MAXL];
-int cpstore[MAXP];
+int cpstore[MAXP+1];
 int vu[MAXL][MAXP][MAXL];
 
 int TOUR=1;
