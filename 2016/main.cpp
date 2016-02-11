@@ -13,11 +13,6 @@
 #define MAXT 150000
 #define MAXL 201
 
-//#define MAXEXAM 2
-
-// estimated useful capa per roundtrip
-//#define ESTIMATED_CAPA 60.
-
 using namespace std;
 
 int R, C, D, T, L;
@@ -30,6 +25,7 @@ int O;
 int Ox[MAXO], Oy[MAXO], On[MAXO];
 int Order[MAXO][MAXP];
 int Ocompl[MAXO];
+int assigned[MAXO];
 
 int t;
 
@@ -250,11 +246,12 @@ int execute(int d, int o, bool real, int myloadf(int, int, vector<int> &, bool))
   dx[d] = Ox[o];
   dy[d] = Oy[o];
   busy_until[d] = t + drone_time;
+  assigned[o] = max(assigned[o], busy_until[d]);
 
   // is order complete?
   // TODO: last assigned drone may not be the last to complete order!!
   if (order_is_complete(o)) {
-    Ocompl[o] = busy_until[d];
+    Ocompl[o] = assigned[o];
     return Ocompl[o];
   } else {
     return -1;
@@ -282,6 +279,7 @@ int time_to_complete(int o, int d) {
   for (int d = 0; d < D; d++)
     bakbusy_until[d] = busy_until[d];
   int bakt = t;
+  int bakassigned = assigned[o];
 
   int att = -1;
   
@@ -319,6 +317,7 @@ int time_to_complete(int o, int d) {
   for (int d = 0; d < D; d++)
     busy_until[d] = bakbusy_until[d];
   Ocompl[o] = -1;
+  assigned[o] = bakassigned;
 
   return att;
 }
@@ -352,8 +351,10 @@ int main() {
 
   for (int i = 0; i < D; i++)
     busy_until[i] = 0;
-  for (int o = 0; o < O; o++)
+  for (int o = 0; o < O; o++){
     Ocompl[o] = -1;
+    assigned[o] = -1;
+  }
   for (int d = 0; d < D; d++) {
     dx[d] = Ox[0];
     dy[d] = Oy[0];
