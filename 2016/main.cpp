@@ -14,7 +14,7 @@
 #define MAXL 201
 
 // estimated useful capa per roundtrip
-#define ESTIMATED_CAPA 100.
+#define ESTIMATED_CAPA 60.
 
 using namespace std;
 
@@ -58,6 +58,29 @@ int order_score(int o, int d) {
 }
 
 int time_to_complete(int o, int d) {
+  /*
+  // backup the crap
+  int bakorder[MAXP];
+  for (int p = 0; p < P; p++)
+    bakorder[p] = Order[o][p];
+  int bakdx[MAXD], bakdy[MAXD];
+  for (int d = 0; d < D; d++) {
+    bakdx[d] = dx[d];
+    bakdy[d] = dy[d];
+  }
+  int bakStore[MAXW][MAXP];
+
+  
+  // simulate assigning everyone to that
+ 
+  // restore
+  for (int p = 0; p < P; p++)
+    Order[o][p] = bakorder[p];
+  for (int d = 0; d < D; d++) {
+    dx[d] = bakdx[d];
+    dy[d] = bakdy[d];
+  }
+  */
   return order_score(o, d);
 }
 
@@ -177,10 +200,10 @@ bool order_is_complete(int o) {
   return true;
 }
 
+// tell d to do something to help towards o
 void execute(int d, int o) {
   double best_wquality = -1;
   int best_w = -1;
-  // tell d to do something to help towards o
   for (int w = 0; w < W; w++) {
     int time_to_warehouse = 0; // load-unload times neglected
     time_to_warehouse += dist(dx[d], dy[d], Wx[w], Wy[w]);
