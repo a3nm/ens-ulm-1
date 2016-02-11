@@ -62,16 +62,28 @@ void execute(int d, int o) {
   vector<int> objects;
   wload(o, best_w, objects);
   sort(objects.begin(), objects.end());
+  objects.push_back(MAXP); // sentinel
 
   // objects sorted, RLE
 
   int last_type = -1, n_last_type = 0;
+  int drone_time = 0;
+  drone_t
 
   for (unsigned int i = 0; i < objects.size(); i++) {
     // go there and load
     if (objects[i] != last_type) {
       // we changed type
       printf("%d L %d %d %d\n", d, best_w, last_type, n_last_type);
+      drone_time++;
+      if (objects[i] == MAXP) {
+        // sentinel
+        break;
+      }
+      last_type = objects[i];
+      n_last_type = 1;
+    } else {
+      n_last_type++;
     }
   }
 
@@ -89,8 +101,6 @@ int main() {
   scanf("%d", &W);
   for (int i = 0; i < W; i++) {
     scanf("%d%d", &(Wx[i]), &(Wy[i]));
-    for (int j = 0; j < P; j++) {
-      scanf("%d", &(Store[i][j]));
     }
   }
   scanf("%d", &O);
