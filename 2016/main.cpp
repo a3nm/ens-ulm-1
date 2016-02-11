@@ -136,6 +136,9 @@ int main() {
   printf("%d\n", W);
   for (int w = 0; w < W; w++) {
     scanf("%d%d", &(Wx[w]), &(Wy[w]));
+    for (int p = 0; p < P; p++) {
+      scanf("%d", &(Store[w][p]));
+    }
   }
   scanf("%d", &O);
   for (int i = 0; i < O; i++)
