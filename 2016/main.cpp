@@ -1,6 +1,7 @@
 #include<cstdio>
+#include<cstring>
 #include<cmath>
-#include<assert.h>
+#include<cassert>
 #include<vector>
 #include<algorithm>
 
@@ -141,6 +142,11 @@ void execute(int d, int o) {
 
   vector<pair<int, int> > act;
 
+  printf("drone %d warehouse %d objective %d will load:\n", d, best_w, o);
+  for (unsigned int i = 0; i < objects.size(); i++) {
+    printf("%d\n", objects[i]);
+  }
+
   for (unsigned int i = 0; i < objects.size(); i++) {
     // go there and load
     if (objects[i] != last_type) {
@@ -164,7 +170,8 @@ void execute(int d, int o) {
   for (unsigned int i = 0; i < act.size(); i++) {
     pair<int, int> myp = act[i];
     printf("%d U %d %d %d\n", d, o, myp.first, myp.second);
-    Order[o][last_type] -= n_last_type;
+    Order[o][myp.first] -= myp.second;
+    printf("order %d for type %d now wants %d\n", o, myp.first, Order[o][myp.first]);
     drone_time += 1;
   }
 
@@ -227,17 +234,17 @@ int main() {
       continue;
     }
     int besttime = T, bestorder = -1;
-    printf("O is %d\n", O);
+    //printf("O is %d\n", O);
     for (int o = 0; o < O; o++) {
       //printf("ocompl %d %d\n", o, Ocompl[o]);
       if (Ocompl[o] < 0) {
-        printf("considering incompl order %d\n", o);
+        //printf("considering incompl order %d\n", o);
         int torder = time_to_complete(o);
         if (torder < besttime) {
           bestorder = o;
           besttime = torder;
         }
-        printf("bestorder is %d\n", bestorder);
+        //printf("bestorder is %d\n", bestorder);
       }
     }
     // assign d to help towards o
