@@ -80,7 +80,7 @@ int sacADos(int cap, int pos, int rp)
 		vc=0;
 		vc = max(vc,sacADos(cap, pos+1, cpstore[pos+1]));
 		if(cap >= Ps[pos])
-			vc = max(vc, sacADos(cap-Ps[pos], pos, rp-1)+Ps[pos]-(rp==cpstore[pos])*LOL);
+			vc = max(vc, sacADos(cap-Ps[pos], pos, rp-1)+Ps[pos]);//-(rp==cpstore[pos])*LOL);
 	}
 	
 	return vc;
@@ -148,8 +148,8 @@ int wload(int o, int w, vector<int>& res) {
 		int notTake = sacADos(cap, pos+1, cpstore[pos+1]);
 		int take=-9999;
 		if(cap >= Ps[pos])
-			take = sacADos(cap-Ps[pos], pos, rp-1)+Ps[pos]-(rp==cpstore[pos])*LOL;
-		if(take > notTake && take >=-9999)
+			take = sacADos(cap-Ps[pos], pos, rp-1)+Ps[pos];//-(rp==cpstore[pos])*LOL;
+		if(take > notTake && take >-9999)
 		{
 			res.push_back(pos);
 			rp--;
