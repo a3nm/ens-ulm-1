@@ -1,5 +1,6 @@
 #include<cstdio>
 #include<cmath>
+#include<assert.h>
 #include<vector>
 #include<algorithm>
 
@@ -85,7 +86,8 @@ void execute(int d, int o) {
 
   // objects sorted, RLE
 
-  int last_type = -1, n_last_type = 0;
+  int last_type = objects[0], n_last_type = 0;
+  assert(last_type != P);
   int drone_time = 0;
   drone_time += dist(dx[d], dy[d], Wx[best_w], Wy[best_w]);
 
@@ -179,13 +181,15 @@ int main() {
     int besttime = T, bestorder = -1;
     printf("O is %d\n", O);
     for (int o = 0; o < O; o++) {
-      printf("ocompl %d %d\n", o, Ocompl[o]);
+      //printf("ocompl %d %d\n", o, Ocompl[o]);
       if (Ocompl[o] < 0) {
         printf("considering incompl order %d\n", o);
         int torder = time_to_complete(o);
         if (torder < besttime) {
           bestorder = o;
+          besttime = torder;
         }
+        printf("bestorder is %d\n", bestorder);
       }
     }
     // assign d to help towards o
