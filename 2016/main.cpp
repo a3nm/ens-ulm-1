@@ -57,33 +57,6 @@ int order_score(int o, int d) {
   return 2*ntrips*dist(x, y, Ox[o], Oy[o]);
 }
 
-int time_to_complete(int o, int d) {
-  /*
-  // backup the crap
-  int bakorder[MAXP];
-  for (int p = 0; p < P; p++)
-    bakorder[p] = Order[o][p];
-  int bakdx[MAXD], bakdy[MAXD];
-  for (int d = 0; d < D; d++) {
-    bakdx[d] = dx[d];
-    bakdy[d] = dy[d];
-  }
-  int bakStore[MAXW][MAXP];
-
-  
-  // simulate assigning everyone to that
- 
-  // restore
-  for (int p = 0; p < P; p++)
-    Order[o][p] = bakorder[p];
-  for (int d = 0; d < D; d++) {
-    dx[d] = bakdx[d];
-    dy[d] = bakdy[d];
-  }
-  */
-  return order_score(o, d);
-}
-
 int dyn[MAXL][MAXP][MAXL];
 int cpstore[MAXP+1];
 int vu[MAXL][MAXP][MAXL];
@@ -164,7 +137,7 @@ int wload(int o, int w, vector<int>& res) {
 	
 	while(pos!=MAXP)
 	{
-		printf("wtf %d\n", pos);
+		//printf("wtf %d\n", pos);
 		if(rp==0)
 		{
 			pos++;
@@ -201,7 +174,8 @@ bool order_is_complete(int o) {
 }
 
 // tell d to do something to help towards o
-void execute(int d, int o) {
+// real = really execute?
+int execute(int d, int o, bool real, int myloadf(int, int, vector<int> &)) {
   double best_wquality = -1;
   int best_w = -1;
   for (int w = 0; w < W; w++) {
@@ -209,7 +183,7 @@ void execute(int d, int o) {
     time_to_warehouse += dist(dx[d], dy[d], Wx[w], Wy[w]);
     time_to_warehouse += dist(Wx[w], Wy[w], Ox[o], Oy[o]);
     vector<int> v; // décoratif
-    int warehouse_load = wload(o, w, v);
+    int warehouse_load = (*myloadf)(o, w, v);
     double w_quality = ((double) warehouse_load) / time_to_warehouse;
     if (w_quality > best_wquality) {
       best_wquality = w_quality;
@@ -219,7 +193,7 @@ void execute(int d, int o) {
 
   // i know the warehouse where to go
   vector<int> objects;
-  wload(o, best_w, objects);
+  (*myloadf)(o, best_w, objects);
   sort(objects.begin(), objects.end());
   objects.push_back(MAXP); // sentinel
 
@@ -241,7 +215,8 @@ void execute(int d, int o) {
     // go there and load
     if (objects[i] != last_type) {
       // we changed type
-      printf("%d L %d %d %d\n", d, best_w, last_type, n_last_type);
+      if (real)
+        printf("%d L %d %d %d\n", d, best_w, last_type, n_last_type);
       act.push_back(make_pair(last_type, n_last_type));
       Store[best_w][last_type] -= n_last_type;
       drone_time++;
@@ -259,7 +234,8 @@ void execute(int d, int o) {
   drone_time += dist(Wx[best_w], Wy[best_w], Ox[o], Oy[o]);
   for (unsigned int i = 0; i < act.size(); i++) {
     pair<int, int> myp = act[i];
-    printf("%d D %d %d %d\n", d, o, myp.first, myp.second);
+    if (real)
+      printf("%d D %d %d %d\n", d, o, myp.first, myp.second);
     Order[o][myp.first] -= myp.second;
    // printf("order %d for type %d now wants %d\n", o, myp.first, Order[o][myp.first]);
     drone_time += 1;
@@ -270,9 +246,76 @@ void execute(int d, int o) {
   busy_until[d] = t + drone_time;
 
   // is order complete?
-  if (order_is_complete(o))
+  if (order_is_complete(o)) {
     Ocompl[o] = busy_until[d];
+    return Ocompl[o];
+  } else {
+    return -1;
+  }
 }
+
+
+
+int time_to_complete(int o, int d) {
+  // backup the crap
+  assert(Ocompl[o] == -1);
+  int bakorder[MAXP];
+  for (int p = 0; p < P; p++)
+    bakorder[p] = Order[o][p];
+  int bakdx[MAXD], bakdy[MAXD];
+  for (int d = 0; d < D; d++) {
+    bakdx[d] = dx[d];
+    bakdy[d] = dy[d];
+  }
+  int bakStore[MAXW][MAXP];
+  for (int w = 0; w < W; w++)
+    for (int p = 0; p < P; p++)
+      bakStore[w][p] = Store[w][p];
+  int bakbusy_until[MAXD];
+  for (int d = 0; d < D; d++)
+    bakbusy_until[d] = busy_until[d];
+  int bakt = t;
+
+  int att = -1;
+  
+  // simulate assigning everyone to that
+  while (t <= T) {
+    //printf("at time %d\n", t);
+    int first_avail = -1;
+    for (int d = 0; d < D; d++)
+      if (busy_until[d] <= t) {
+        first_avail = d;
+        break;
+      }
+    if (first_avail < 0) {
+      t++;
+      continue;
+    }
+    att = execute(first_avail, o, 0, &wload2);
+    if (att > 0)
+      break;
+  }
+
+  assert(att > 0);
+ 
+  // restore
+  for (int p = 0; p < P; p++)
+    Order[o][p] = bakorder[p];
+  for (int d = 0; d < D; d++) {
+    dx[d] = bakdx[d];
+    dy[d] = bakdy[d];
+  }
+  t = bakt;
+  for (int w = 0; w < W; w++)
+    for (int p = 0; p < P; p++)
+      Store[w][p] = bakStore[w][p];
+  for (int d = 0; d < D; d++)
+    busy_until[d] = bakbusy_until[d];
+  Ocompl[o] = -1;
+
+  return att;
+}
+
 
 int main() {
   scanf("%d%d%d%d%d", &R, &C, &D, &T, &L);
@@ -344,7 +387,7 @@ int main() {
     }
     // assign d to help towards o
    // printf("drone %d will help for order %d\n", first_avail, bestorder);
-    execute(first_avail, bestorder);
+    execute(first_avail, bestorder, 1, &wload);
   }
   return 0;
 }
