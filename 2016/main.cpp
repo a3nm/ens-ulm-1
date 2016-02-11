@@ -30,7 +30,7 @@ int main() {
     }
   }
   scanf("%d", &O);
-  for (unsigned int i = 0; i < C; i++) {
+  for (unsigned int i = 0; i < O; i++) {
     scanf("%d%d%d", &(Ox[i]), &(Oy[i]), &(On[i]));
     for (unsigned int j = 0; j < On[i]; j++) {
       scanf("%d", &(Order[i][j]));
