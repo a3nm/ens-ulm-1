@@ -14,7 +14,7 @@
 #define MAXL 201
 
 // estimated useful capa per roundtrip
-#define ESTIMATED_CAPA 100.
+#define ESTIMATED_CAPA 50.
 
 using namespace std;
 
