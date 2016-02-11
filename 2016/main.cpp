@@ -32,7 +32,17 @@ int dist(int xa, int ya, int xb, int yb) {
   return ceil(sqrt(dx*dx + dy*dy));
 }
 
-int wload(int o, int w) {
+//int sacADos(int rest);
+
+int wload(int o, int w, vector<int>& res) {
+	
+	/*int cpstore[MAXP];
+	
+	for(int i = 0; i < MAXP; i++)
+		cpstore[i]=min(Store[w][i], Order[o][i]);
+	
+	int res = sacADos(L, 0, cpstore[0]);*/
+	
 	return 0;
   // return useful load than can be taken in warehouse w for order o
 }
