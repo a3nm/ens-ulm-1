@@ -26,7 +26,7 @@ int main() {
   for (unsigned int i = 0; i < W; i++) {
     scanf("%d%d", &(Wx[i]), &(Wy[i]));
     for (unsigned int j = 0; j < P; j++) {
-      scanf("%d", &(Store[MAXW][MAXP]));
+      scanf("%d", &(Store[i][j]));
     }
   }
   scanf("%d", &O);
@@ -36,6 +36,8 @@ int main() {
       scanf("%d", &(Order[i][j]));
     }
   }
+
+
 
   return 0;
 }
