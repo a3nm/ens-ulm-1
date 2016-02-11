@@ -13,6 +13,8 @@
 #define MAXT 150000
 #define MAXL 201
 
+#define MAXEXAM 5
+
 // estimated useful capa per roundtrip
 #define ESTIMATED_CAPA 60.
 
@@ -86,19 +88,22 @@ int sacADos(int cap, int pos, int rp)
 	return vc;
 }
 
-int wload2(int o, int w, vector<int>& res) {
+int wload2(int o, int w, vector<int>& res, bool withvect) {
 
 for(int i = 0; i < MAXP; i++)
 		cpstore[i]=min(L, min(Store[w][i], Order[o][i]));
 	
 	int curL = L;
 	int rv=0;
+
+        // todo sort decreasing
 	
 	for(int i = 0; i < MAXP; i++)
 	{
 		if(cpstore[i] > 0 && Ps[i] <= curL)
 		{
-			res.push_back(i);
+                        if (withvect)
+			  res.push_back(i);
 			rv+=Ps[i];
 			curL-=Ps[i];
 		}
@@ -107,7 +112,8 @@ for(int i = 0; i < MAXP; i++)
 
 }
 
-int wload(int o, int w, vector<int>& res) {
+//withvect ignored
+int wload(int o, int w, vector<int>& res, bool withvect) {
 	TOUR++;
 	//memset(dyn, 0, sizeof(dyn));
 	
@@ -175,7 +181,7 @@ bool order_is_complete(int o) {
 
 // tell d to do something to help towards o
 // real = really execute?
-int execute(int d, int o, bool real, int myloadf(int, int, vector<int> &)) {
+int execute(int d, int o, bool real, int myloadf(int, int, vector<int> &, bool)) {
   double best_wquality = -1;
   int best_w = -1;
   for (int w = 0; w < W; w++) {
@@ -183,7 +189,7 @@ int execute(int d, int o, bool real, int myloadf(int, int, vector<int> &)) {
     time_to_warehouse += dist(dx[d], dy[d], Wx[w], Wy[w]);
     time_to_warehouse += dist(Wx[w], Wy[w], Ox[o], Oy[o]);
     vector<int> v; // décoratif
-    int warehouse_load = (*myloadf)(o, w, v);
+    int warehouse_load = (*myloadf)(o, w, v, false);
     double w_quality = ((double) warehouse_load) / time_to_warehouse;
     if (w_quality > best_wquality) {
       best_wquality = w_quality;
@@ -193,7 +199,7 @@ int execute(int d, int o, bool real, int myloadf(int, int, vector<int> &)) {
 
   // i know the warehouse where to go
   vector<int> objects;
-  (*myloadf)(o, best_w, objects);
+  (*myloadf)(o, best_w, objects, true);
   sort(objects.begin(), objects.end());
   objects.push_back(MAXP); // sentinel
 
@@ -368,18 +374,28 @@ int main() {
     }
     int besttime = T, bestorder = -1;
     //printf("O is %d\n", O);
+    int examd = 0;
+
+    vector<pair<int, int> > vheur;
     for (int o = 0; o < O; o++) {
-      //printf("ocompl %d %d\n", o, Ocompl[o]);
       if (Ocompl[o] < 0) {
-        //printf("considering incompl order %d\n", o);
-        //int torder = time_to_complete(o, first_avail);
-        int torder = order_score(o, first_avail);
-        if (torder < besttime) {
-          bestorder = o;
-          besttime = torder;
-        }
-        //printf("bestorder is %d\n", bestorder);
+        int myt = order_score(o, first_avail);
+        vheur.push_back(make_pair(myt, o));
       }
+    }
+    sort(vheur.begin(), vheur.end());
+    for (unsigned int i = 0; i < vheur.size(); i++) {
+      int o = vheur[i].second;
+      //printf("considering incompl order %d\n", o);
+      int torder = time_to_complete(o, first_avail);
+      //int torder = order_score(o, first_avail);
+      if (torder < besttime) {
+        bestorder = o;
+        besttime = torder;
+      }
+      examd++;
+      if (examd > MAXEXAM)
+        break;
     }
     if (bestorder == -1) {
       // we finished?!
