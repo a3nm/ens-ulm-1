@@ -137,7 +137,7 @@ int wload(int o, int w, vector<int>& res) {
 	
 	while(pos!=MAXP)
 	{
-		printf("wtf %d\n", pos);
+		//printf("wtf %d\n", pos);
 		if(rp==0)
 		{
 			pos++;
@@ -175,7 +175,7 @@ bool order_is_complete(int o) {
 
 // tell d to do something to help towards o
 // real = really execute?
-int execute(int d, int o, bool real, (int) *myloadf(int, int, vector<int> &)) {
+int execute(int d, int o, bool real, int myloadf(int, int, vector<int> &)) {
   double best_wquality = -1;
   int best_w = -1;
   for (int w = 0; w < W; w++) {
@@ -183,7 +183,7 @@ int execute(int d, int o, bool real, (int) *myloadf(int, int, vector<int> &)) {
     time_to_warehouse += dist(dx[d], dy[d], Wx[w], Wy[w]);
     time_to_warehouse += dist(Wx[w], Wy[w], Ox[o], Oy[o]);
     vector<int> v; // décoratif
-    int warehouse_load = myloadf(o, w, v);
+    int warehouse_load = (*myloadf)(o, w, v);
     double w_quality = ((double) warehouse_load) / time_to_warehouse;
     if (w_quality > best_wquality) {
       best_wquality = w_quality;
@@ -193,7 +193,7 @@ int execute(int d, int o, bool real, (int) *myloadf(int, int, vector<int> &)) {
 
   // i know the warehouse where to go
   vector<int> objects;
-  myloadf(o, best_w, objects);
+  (*myloadf)(o, best_w, objects);
   sort(objects.begin(), objects.end());
   objects.push_back(MAXP); // sentinel
 
@@ -291,7 +291,7 @@ int time_to_complete(int o, int d) {
       t++;
       continue;
     }
-    att = execute(first_avail, o, 0);
+    att = execute(first_avail, o, 0, &wload2);
     if (att > 0)
       break;
   }
@@ -387,7 +387,7 @@ int main() {
     }
     // assign d to help towards o
    // printf("drone %d will help for order %d\n", first_avail, bestorder);
-    execute(first_avail, bestorder, 1);
+    execute(first_avail, bestorder, 1, &wload);
   }
   return 0;
 }
