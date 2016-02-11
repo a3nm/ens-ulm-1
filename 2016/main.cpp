@@ -185,7 +185,7 @@ void execute(int d, int o) {
   drone_time += dist(Wx[best_w], Wy[best_w], Ox[o], Oy[o]);
   for (unsigned int i = 0; i < act.size(); i++) {
     pair<int, int> myp = act[i];
-    printf("%d U %d %d %d\n", d, o, myp.first, myp.second);
+    printf("%d D %d %d %d\n", d, o, myp.first, myp.second);
     Order[o][myp.first] -= myp.second;
     printf("order %d for type %d now wants %d\n", o, myp.first, Order[o][myp.first]);
     drone_time += 1;
@@ -262,6 +262,11 @@ int main() {
         }
         //printf("bestorder is %d\n", bestorder);
       }
+    }
+    if (bestorder == -1) {
+      // we finished?!
+      printf("finished!!\n");
+      break;
     }
     // assign d to help towards o
     printf("drone %d will help for order %d\n", first_avail, bestorder);
