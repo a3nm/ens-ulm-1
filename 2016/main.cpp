@@ -63,6 +63,8 @@ int vu[MAXL][MAXP][MAXL];
 
 int TOUR=1;
 
+const int LOL = 5;
+
 int sacADos(int cap, int pos, int rp)
 {
 	if(pos==MAXP)
@@ -75,12 +77,34 @@ int sacADos(int cap, int pos, int rp)
 	if(vu[cap][pos][rp]!=TOUR)
 	{
 		vu[cap][pos][rp]=TOUR;
-		vc = sacADos(cap, pos+1, cpstore[pos+1]);
+		vc=0;
+		vc = max(vc,sacADos(cap, pos+1, cpstore[pos+1]));
 		if(cap >= Ps[pos])
-			vc = max(vc, sacADos(cap-Ps[pos], pos, rp-1)+Ps[pos]);
+			vc = max(vc, sacADos(cap-Ps[pos], pos, rp-1)+Ps[pos]-(rp==cpstore[pos])*LOL);
 	}
 	
 	return vc;
+}
+
+int wload2(int o, int w, vector<int>& res) {
+
+for(int i = 0; i < MAXP; i++)
+		cpstore[i]=min(L, min(Store[w][i], Order[o][i]));
+	
+	int curL = L;
+	int rv=0;
+	
+	for(int i = 0; i < MAXP; i++)
+	{
+		if(cpstore[i] > 0 && Ps[i] <= curL)
+		{
+			res.push_back(i);
+			rv+=Ps[i];
+			curL-=Ps[i];
+		}
+	}
+	return rv;
+
 }
 
 int wload(int o, int w, vector<int>& res) {
@@ -113,6 +137,7 @@ int wload(int o, int w, vector<int>& res) {
 	
 	while(pos!=MAXP)
 	{
+		printf("wtf %d\n", pos);
 		if(rp==0)
 		{
 			pos++;
@@ -121,10 +146,10 @@ int wload(int o, int w, vector<int>& res) {
 		}
 		
 		int notTake = sacADos(cap, pos+1, cpstore[pos+1]);
-		int take=-1;
+		int take=-9999;
 		if(cap >= Ps[pos])
-			take = sacADos(cap-Ps[pos], pos, rp-1)+Ps[pos];
-		if(take > notTake && take !=-1)
+			take = sacADos(cap-Ps[pos], pos, rp-1)+Ps[pos]-(rp==cpstore[pos])*LOL;
+		if(take > notTake && take >=-9999)
 		{
 			res.push_back(pos);
 			rp--;
