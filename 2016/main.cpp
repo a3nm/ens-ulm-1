@@ -32,18 +32,65 @@ int dist(int xa, int ya, int xb, int yb) {
   return ceil(sqrt(dx*dx + dy*dy));
 }
 
-//int sacADos(int rest);
+int dyn[MAXL][MAXP][MAXL];
+int cpstore[MAXP];
+
+int sacADos(int cap, int pos, int rp)
+{
+	if(pos==MAXP)
+		return 0;
+	if(rp==0)
+		return sacADos(cap, pos+1, cpstore[pos+1]);
+	
+	int& vc = dyn[cap][pos][rp];
+	
+	if(!vc)
+	{
+		vc = sacADos(cap, pos+1, cpstore[pos+1]);
+		if(cap >= Ps[pos])
+			vc = max(vc, sacADos(cap-Ps[pos], pos, rp-1)+Ps[pos]);
+	}
+	
+	return vc;
+}
 
 int wload(int o, int w, vector<int>& res) {
-	
-	/*int cpstore[MAXP];
+	memset(dyn, 0, sizeof(dyn));
 	
 	for(int i = 0; i < MAXP; i++)
-		cpstore[i]=min(Store[w][i], Order[o][i]);
+		cpstore[i]=min(L, min(Store[w][i], Order[o][i]));
 	
-	int res = sacADos(L, 0, cpstore[0]);*/
+	int res = sacADos(L, 0, cpstore[0]);
 	
-	return 0;
+	int cap=L,pos=0,rp=cpstore[0];
+	
+	while(pos!=MAXP)
+	{
+		if(rp==0)
+		{
+			pos++;
+			rp=cpstore[pos];
+			continue;
+		}
+		
+		int notTake = sacADos(cap, pos+1, cpstore[pos+1]);
+		int take=-1;
+		if(cap >= Ps[pos])
+			take = sacADos(cap-Ps[pos], pos, rp-1)+Ps[pos];
+		if(take > notTake)
+		{
+			res.push_back(pos);
+			rp--;
+			cap=cap-Ps[pos];
+		}
+		else
+		{
+			pos++;
+			rp=cpstore[pos];
+		}
+	}
+	
+	return res;
   // return useful load than can be taken in warehouse w for order o
 }
 
