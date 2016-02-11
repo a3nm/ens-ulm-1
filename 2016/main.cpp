@@ -1,5 +1,7 @@
 #include<cstdio>
 #include<cmath>
+#include<vector>
+#include<algorithm>
 
 #define MAXP 2002
 #define MAXW 20
@@ -7,6 +9,8 @@
 #define MAXON 10002
 #define MAXO 1252
 #define MAXT 150000
+
+using namespace std;
 
 int R, C, D, T, L;
 int P;
@@ -16,7 +20,7 @@ int Wx[MAXW], Wy[MAXW];
 int Store[MAXW][MAXP];
 int O;
 int Ox[MAXO], Oy[MAXO], On[MAXO];
-int Order[MAXO][MAXON];
+int Order[MAXO][MAXP];
 int Ocompl[MAXO];
 
 int busy_until[MAXD];
@@ -44,12 +48,36 @@ void execute(int d, int o) {
     int time_to_warehouse = 0; // load-unload times neglected
     time_to_warehouse += dist(dx[d], dy[d], Wx[w], Wy[w]);
     time_to_warehouse += dist(Wx[d], Wy[d], Ox[o], Oy[o]);
-    int warehouse_load = wload(o, w);
-
-
+    vector<int> v; // décoratif
+    int warehouse_load = wload(o, w, v);
+    double w_quality = ((double) warehouse_load) / time_to_warehouse;
+    if (w_quality > best_wquality) {
+      best_wquality = w_quality;
+      best_w = w;
+    }
   }
 
   // i know the warehouse where to go
+  vector<int> objects;
+  wload(o, best_w, objects);
+  sort(objects.begin(), objects.end());
+
+  // objects sorted, RLE
+
+  int last_type = -1, n_last_type = 0;
+
+  for (unsigned int i = 0; i < objects.size(); i++) {
+    // go there and load
+    if (objects[i] != last_type) {
+      // we changed type
+      printf("%d L %d %d %d\n", d, best_w, last_type, n_last_type);
+    }
+  }
+
+  // write that order is fulfilled
+  // write that order components are fulfilled
+  // write that capas are used
+  // write that the drone is busy
 }
 
 int main() {
@@ -65,10 +93,15 @@ int main() {
     }
   }
   scanf("%d", &O);
-  for (int i = 0; i < O; i++) {
+  for (int i = 0; i < O; i++)
+    for (int p = 0; p < P; p++)
+      Order[i][p] = 0;
+  for (int o = 0; o < O; o++) {
     scanf("%d%d%d", &(Ox[i]), &(Oy[i]), &(On[i]));
     for (int j = 0; j < On[i]; j++) {
-      scanf("%d", &(Order[i][j]));
+      int p;
+      scanf("%d", p);
+      Order[o][p]++;
     }
   }
 
