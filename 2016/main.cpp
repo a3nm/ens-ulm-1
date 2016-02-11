@@ -49,8 +49,12 @@ int order_score(int o, int d) {
   for (int p = 0; p < P; p++) {
     load += Order[o][p] * Ps[p];
   }
+  //int x = dx[d];
+  //int y = dy[d];
+  int x = Wx[0];
+  int y = Wy[0];
   double ntrips = ceil(((double) load) / ESTIMATED_CAPA);
-  return 2*ntrips*dist(dx[d], dy[d], Ox[o], Oy[o]);
+  return 2*ntrips*dist(x, y, Ox[o], Oy[o]);
 }
 
 int time_to_complete(int o, int d) {
