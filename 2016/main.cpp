@@ -372,7 +372,8 @@ int main() {
       //printf("ocompl %d %d\n", o, Ocompl[o]);
       if (Ocompl[o] < 0) {
         //printf("considering incompl order %d\n", o);
-        int torder = time_to_complete(o, first_avail);
+        //int torder = time_to_complete(o, first_avail);
+        int torder = order_score(o, first_avail);
         if (torder < besttime) {
           bestorder = o;
           besttime = torder;
