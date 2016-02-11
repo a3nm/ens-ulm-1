@@ -62,11 +62,26 @@ int sacADos(int cap, int pos, int rp)
 }
 
 int wload(int o, int w, vector<int>& res) {
-	memset(dyn, 0, sizeof(dyn));
+	/*memset(dyn, 0, sizeof(dyn));*/
 	
 	for(int i = 0; i < MAXP; i++)
 		cpstore[i]=min(L, min(Store[w][i], Order[o][i]));
 	
+	int curL = L;
+	int rv=0;
+	
+	for(int i = 0; i < MAXP; i++)
+	{
+		if(cpstore[i] > 0 && Ps[i] <= curL)
+		{
+			res.push_back(i);
+			rv+=Ps[i];
+			curL-=Ps[i];
+		}
+	}
+	return rv;
+	
+	/*
 	int rv = sacADos(L, 0, cpstore[0]);
 	
 	int cap=L,pos=0,rp=cpstore[0];
@@ -97,7 +112,7 @@ int wload(int o, int w, vector<int>& res) {
 		}
 	}
 	
-	return rv;
+	return rv;*/
   // return useful load than can be taken in warehouse w for order o
 }
 
