@@ -13,6 +13,9 @@
 #define MAXT 150000
 #define MAXL 201
 
+// estimated useful capa per roundtrip
+#define ESTIMATED_CAPA 100.
+
 using namespace std;
 
 int R, C, D, T, L;
@@ -31,14 +34,27 @@ int t;
 int busy_until[MAXD];
 int dx[MAXD], dy[MAXD];
 
-int time_to_complete(int o) {
-  return 0;
+int dist(int xa, int ya, int xb, int yb) {
+  int mydx = (xa - xb);
+  int mydy = (ya - yb);
+  return ceil(sqrt(mydx*mydx + mydy*mydy));
 }
 
-int dist(int xa, int ya, int xb, int yb) {
-  int dx = (xa - xb);
-  int dy = (ya - yb);
-  return ceil(sqrt(dx*dx + dy*dy));
+
+int order_score(int o, int d) {
+  // return a score depending on the distance to the currently unoccupied drone
+  // and the number of travels required
+  
+  int load = 0;
+  for (int p = 0; p < P; p++) {
+    load += Order[o][p] * Ps[p];
+  }
+  double ntrips = ceil(((double) load) / ESTIMATED_CAPA);
+  return 2*ntrips*dist(dx[d], dy[d], Ox[o], Oy[o]);
+}
+
+int time_to_complete(int o, int d) {
+  return order_score(o, d);
 }
 
 int dyn[MAXL][MAXP][MAXL];
@@ -254,7 +270,7 @@ int main() {
       //printf("ocompl %d %d\n", o, Ocompl[o]);
       if (Ocompl[o] < 0) {
         //printf("considering incompl order %d\n", o);
-        int torder = time_to_complete(o);
+        int torder = time_to_complete(o, first_avail);
         if (torder < besttime) {
           bestorder = o;
           besttime = torder;
