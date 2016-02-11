@@ -37,6 +37,7 @@ int dist(int xa, int ya, int xb, int yb) {
 }
 
 int wload(int o, int w) {
+	return 0;
   // return useful load than can be taken in warehouse w for order o
 }
 
