@@ -33,8 +33,14 @@ int car(int d)
 
 int dist(int d, int w,int o)
 {
-  return sqrt(car(dx[d]-Wx[w])+car(dy[d]-Wy[d])) + sqrt(car(Ox[o]-Wx[w])+car(Oy[o]-Wy[d])) ;
+  return ceil(sqrt(car(dx[d]-Wx[w])+car(dy[d]-Wy[w])) + sqrt(car(Ox[o]-Wx[w])+car(Oy[o]-Wy[w]))) ;
 }
+
+int dist_direct(int d, int o)
+{
+  return ceil(sqrt(car(Ox[o]-Wx[w])+car(Oy[o]-Wy[w]))) ;
+}
+
 int time_to_complete(int o) {
   return 0;
 }
@@ -42,6 +48,9 @@ int time_to_complete(int o) {
 void execute(int d, int o) {
   // tell d to do something to help towards o
 }
+
+
+vector<pii> parcours ;
 
 int main() {
   scanf("%d%d%d%d%d", &R, &C, &D, &T, &L);
@@ -97,11 +106,12 @@ int main() {
 	    }
 	if(best_t<T)
 	  {
+	    fprintf(stderr,"DRONE %d WARE %d ORDER %d\n",best_d,best_w,o);
 	    busy_until[best_d] = best_t;
 	    dx[best_d] = Ox[o] ;
 	    dy[best_d] = Oy[o] ;
 	    printf("%d L %d %d 1\n",best_d,best_w,prod);
-	    printf("%d W %d %d 1\n",best_d,best_w,prod);
+	    printf("%d D %d %d 1\n",best_d,o,prod);
 	    Store[best_w][prod]--;
 	  }
       }
