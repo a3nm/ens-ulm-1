@@ -361,8 +361,8 @@ int main() {
     assigned[o] = -1;
   }
   for (int d = 0; d < D; d++) {
-    dx[d] = Ox[0];
-    dy[d] = Oy[0];
+    dx[d] = Wx[0];
+    dy[d] = Wy[0];
   }
 
   t = 0;
