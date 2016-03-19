@@ -63,7 +63,7 @@ struct State
             ans.pos.lat=-180*60*60-(pos.lat+v);ans.pos.longi=-180*60*60+pos.longi-15;
         }
         if(ans.pos.longi < -648000)ans.pos.longi+=360*60*60;
-        if(ans.pos.longi > -647999)ans.pos.longi-=360*60*60;
+        if(ans.pos.longi > 647999)ans.pos.longi-=360*60*60;
 
     return ans;
     }
@@ -197,8 +197,7 @@ for(int i=0;i<nbSat;i++){
                     satel[i].targetsAtTime[t].push_back(iter->id);
         }
 	//printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
-    //if(satel[i].targetsAtTime[t].size() != 0)
-    //printf("%d\n",satel[i].targetsAtTime[t].size());
+    //if(satel[i].targetsAtTime[t].size() != 0)printf("%d\n",satel[i].targetsAtTime[t].size());
     }
 
  }
