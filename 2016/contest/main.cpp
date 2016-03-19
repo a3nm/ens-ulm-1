@@ -31,12 +31,19 @@ struct Point
 	
         int lat;//Phi // EN SECONDES
         int longi;//Lambda //EN SECONDES
-    Point() { }
-    Point(int lat, int longi) : lat(lat), longi(longi) { }
+        int id; //par toujours rempli
+    Point() : lat(0), longi(0), id(-1){ }
+    Point(int lat, int longi) : lat(lat), longi(longi), id(-1) { }
+    Point(int lat, int longi, int id) : lat(lat), longi(longi), id(id) { }
     const bool operator< (const Point &other ) const{
+    	if (lat==other.lat && longi == other.longi)
+    		return id < other.id;
         return lat==other.lat ? longi<other.longi : lat<other.lat;
         }
 };
+
+vector<Point> listeGlobPts;
+int nbPtsTt;
 
 struct State
 {
@@ -79,7 +86,7 @@ struct Satellite
 };
 
 Satellite satel[100];
-vector<Point> locCollec[10000];
+vector<int> idLocCollec[10000];
 int valCollec[10000];
 vector<Interv> toursPossibles[10000];
 set<Point> allTargets;
@@ -117,8 +124,13 @@ int main()
 			int lat /*phi*/, longi /*lambda*/;
 			
 			scanf("%d%d", &lat, &longi);
-			locCollec[i].push_back(Point(lat, longi));
-                        allTargets.insert(Point(lat,longi));
+			
+			listeGlobPts.push_back(Point(lat,longi));
+			
+			idLocCollec[i].push_back(nbPtsTt);
+            allTargets.insert(Point(lat,longi,nbPtsTt));
+            
+            nbPtsTt++;
 		}
 		
 		for(int j = 0; j < nbRange; j++)
@@ -142,8 +154,8 @@ for(int i=0;i<nbSat;i++){
                satel[i].targetsAtTime[t].push_back(*iter);
         }
     //printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
-    if(satel[i].targetsAtTime[t].size() != 0)
-    printf("%d\n",satel[i].targetsAtTime[t].size());
+    //if(satel[i].targetsAtTime[t].size() != 0)
+    //printf("%d\n",satel[i].targetsAtTime[t].size());
     }
 }
 
