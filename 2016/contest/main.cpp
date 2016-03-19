@@ -96,7 +96,7 @@ vector<Interv> toursPossibles[10000];
 set<Point> allTargets;
 
 vector<Point> listeGlobPts;
-int nbPtsTt;
+int nbPtsTt=0;
 vector<int> idDeMaCollec;
 
 bool isAllowed(int id_coll, int t){
@@ -198,7 +198,7 @@ for(int i=0;i<nbSat;i++){
    // printf("%d\n",i);
     for(int t=0;t<nbTours;t++){
         Point pos = satel[i].allStates[t].pos;
-        int delta=min(satel[i].maxOrientChangePerTurn * t, satel[i].maxOrientChangeTotal);
+        int delta=min(satel[i].maxOrientChangePerTurn * (t+1), satel[i].maxOrientChangeTotal);
         set<Point>::iterator iter = allTargets.lower_bound(Point(pos.lat-delta,pos.longi-delta));
         set<Point>::iterator iterMax = allTargets.lower_bound(Point(pos.lat+delta,pos.longi+delta+1));
         for(;iter!=iterMax && iter != allTargets.end() ;iter++){
