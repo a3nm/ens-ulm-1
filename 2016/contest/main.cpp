@@ -32,7 +32,7 @@ struct Point
 	
         int lat;//Phi // EN SECONDES
         int longi;//Lambda //EN SECONDES
-        int id; //par toujours rempli
+        int id; //pas toujours rempli
     Point() : lat(0), longi(0), id(-1){ }
     Point(int lat, int longi) : lat(lat), longi(longi), id(-1) { }
     Point(int lat, int longi, int id) : lat(lat), longi(longi), id(id) { }
@@ -166,7 +166,7 @@ int main(int argc, char **argv)
 		}
 	}
 	
-
+//FILE *f=fopen("precalc_
 for(int i=0;i<nbSat;i++){
    // printf("%d\n",i);
     for(int t=0;t<nbTours;t++){
