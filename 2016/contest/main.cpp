@@ -105,7 +105,7 @@ vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, const Poi
 	{
 	  Point pos = listeGlobPts[idPt];
 	  if(pos.longi <= posRef.longi + delta && pos.longi >= posRef.longi - delta
-	     && pos.lat <= posRef.lat + delta && pos.lat >= posRef.lat)
+	     && pos.lat <= posRef.lat + delta && pos.lat >= posRef.lat - delta)
 	    res.push_back(idPt);
 	}
 	return res;
