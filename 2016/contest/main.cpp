@@ -199,8 +199,7 @@ for(int i=0;i<nbSat;i++){
                 }
         }
 	//printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
-    //if(satel[i].targetsAtTime[t].size() != 0)
-    //printf("%d\n",satel[i].targetsAtTime[t].size());
+    //if(satel[i].targetsAtTime[t].size() != 0)printf("%d\n",satel[i].targetsAtTime[t].size());
     }
 
  }
