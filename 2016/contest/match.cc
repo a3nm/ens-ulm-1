@@ -84,9 +84,10 @@ public:
 	sat_time[sat]=0;
 	sat_pos[sat]=Point();
       }
+    done.clear();
     done.resize(nbPtsTt,false);
     map<int,int> access[42] ;
-    const int K = 1 ;
+    const int K = 10 ;
     for(ui turn = 0 ; turn < nbTours ; turn+=K)
       {
 	objs.clear();
