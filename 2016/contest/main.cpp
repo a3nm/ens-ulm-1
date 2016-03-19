@@ -128,8 +128,10 @@ vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, const Poi
 
 #include "match.cc"
 
-int readsol(const char* file);
+int readsol(const char* file, bool print, unsigned int nbDone[10002], vector<pair<Point, pair<int, int> > > result);
+
 int glouton(void);
+int glouton2(void);
 
 int main(int argc, char **argv)
 {
@@ -205,34 +207,62 @@ for(int i=0;i<nbSat;i++){
  }
 
 
-        if (argc == 2)
-          return readsol(argv[1]);
+        if (argc == 2) {
+          unsigned int nbDone[10002];
+          vector<pair<Point, pair<int, int> > > result;
+          readsol(argv[1], true, nbDone, result);
+          return 0;
+        }
     if (!strcmp(argv[0], "./glouton"))
-      return glouton();
-    louis l;
-    l.sol();
+      return glouton2();
 
-	return 0;
+    unsigned int nbDone[10002];
+    int score = 0;
+
+    while (true) {
+      louis l;
+      vector<pair<Point, pair<int, int> > > result;
+      //result = l.sol();
+      l.sol();
+      int new_score = readsol("", false, nbDone, result);
+      // decide based on nbDone which tasks to do or not
+    }
+
+    return 0;
 }
 
 
-int readsol(const char* file) {
-  printf("CHECK SOLUTION in %s\n", file);
-  FILE* f = fopen(file, "r");
+int readsol(const char* file, bool print, unsigned int nbDone[10002], vector<pair<Point, pair<int, int> > > result)
+    {
+  if (print)
+    printf("CHECK SOLUTION in %s\n", file);
+  FILE* f;
+  if (result.size() == 0)
+    f = fopen(file, "r");
   int N;
   vector<pair<int, pair<int, int> > > V[42];
-  fscanf(f, "%d", &N);
+  if (result.size() == 0)
+    fscanf(f, "%d", &N);
+  else
+    N = result.size();
   for (int i = 0; i < N; i++) {
     int phi, lambda, t, id;
-    fscanf(f, "%d%d%d%d", &phi, &lambda, &t, &id);
+    if (result.size() == 0)
+      fscanf(f, "%d%d%d%d", &phi, &lambda, &t, &id);
+    else {
+      phi = result[i].first.lat;
+      lambda = result[i].first.longi;
+      t = result[i].second.first;
+      id = result[i].second.second;
+    }
     V[id].push_back(make_pair(t, make_pair(phi, lambda)));
   }
-  fclose(f);
+  if (result.size() == 0)
+    fclose(f);
   map<Point, vector<int> > pointToCollec;
   // done points for collection
   set<Point> isDone[10002];
   // nb done for collection
-  unsigned int nbDone[10002];
 
   for (int i = 0; i < nbCollec; i++) {
     nbDone[i] = 0;
@@ -291,16 +321,19 @@ int readsol(const char* file) {
       posy = rel.longi;
     }
   }
-  printf("solution ok\n");
+  if (print)
+    printf("solution ok\n");
   long score = 0;
   for (int c = 0; c <nbCollec; c++) {
-    printf("for collec %d done %d points of %d\n", c, nbDone[c], (int) idLocCollec[c].size());
+    if(print)
+      printf("for collec %d done %d points of %d\n", c, nbDone[c], (int) idLocCollec[c].size());
     if (nbDone[c] == idLocCollec[c].size()) {
       score += valCollec[c];
     }
   }
+  if (print)
   printf("FINAL SCORE %ld\n", score);
-  return 0;
+  return score;
 }
 
 int glouton() {
