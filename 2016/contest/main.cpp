@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 #include <string>
+#include <map>
 #include <cmath>
 
 #include <set>
@@ -176,6 +177,19 @@ int readsol(const char* file) {
     V[id].push_back(make_pair(t, make_pair(phi, lambda)));
   }
   fclose(f);
+  map<Point, vector<int> > pointToCollec;
+  // done points for collection
+  set<Point> isDone[10002];
+  // nb done for collection
+  int nbDone[10002];
+
+  for (int i = 0; i < nbCollec; i++) {
+    nbDone[i] = 0;
+    for (unsigned int j = 0; j < idLocCollec[i].size(); j++) {
+      Point pt = listeGlobPts[idLocCollec[i][j]];
+      pointToCollec[pt].push_back(i);
+    }
+  }
   for (int i = 0; i < nbSat; i++) {
     sort(V[i].begin(), V[i].end());
     int posx = 0, posy = 0, t = 0;
@@ -205,10 +219,35 @@ int readsol(const char* file) {
             dx, dy, dt, satel[i].maxOrientChangePerTurn);
         exit(42);
       }
+      // now mark the done collecs
+      Point mypt = Point(phi, lambda);
+      for (unsigned int k = 0; k < pointToCollec[mypt].size(); k++) {
+        int collec = pointToCollec[mypt][k];
+        if (isDone[collec].find(mypt) != isDone[collec].end())
+          continue; // already good
+        // check if t is in right range
+        for (unsigned int l = 0; l < toursPossibles[collec].size(); l++) {
+          if (t >= toursPossibles[collec][l].tourDebut && t <= toursPossibles[collec][l].tourFin) {
+            // we are good!
+            isDone[collec].insert(mypt);
+            nbDone[collec]++;
+            break;
+          }
+        }
+      }
       t = V[i][j].first;
       posx = rel.lat;
       posy = rel.longi;
     }
   }
+  printf("solution ok\n");
+  long score = 0;
+  for (int c = 0; c <nbCollec; c++) {
+    printf("for collec %d done %d points of %d\n", c, nbDone[c], idLocCollec[c].size());
+    if (nbDone[c] == idLocCollec[c].size()) {
+      score += valCollec[c];
+    }
+  }
+  printf("FINAL SCORE %d\n", score);
 
 }
