@@ -61,6 +61,8 @@ struct State
             ans.v=-v;
             ans.pos.lat=-180*60*60-(pos.lat+v);ans.pos.longi=-180*60*60+pos.longi-15;
         }
+        if(ans.pos.longi < -648000)ans.pos.longi+=360*60*60;
+        if(ans.pos.longi > -647999)ans.pos.longi-=360*60*60;
 
     return ans;
     }
