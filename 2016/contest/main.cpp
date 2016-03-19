@@ -33,7 +33,7 @@ struct Point
 	
         int lat;//Phi // EN SECONDES
         int longi;//Lambda //EN SECONDES
-        int id; //par toujours rempli
+        int id; //pas toujours rempli
     Point() : lat(0), longi(0), id(-1){ }
     Point(int lat, int longi) : lat(lat), longi(longi), id(-1) { }
     Point(int lat, int longi, int id) : lat(lat), longi(longi), id(id) { }
@@ -51,7 +51,7 @@ struct State
 
     State next(){
         State ans;
-        if(pos.lat + v >= -90*60*60 && pos.lat <= 90*60*60 ){
+        if(pos.lat + v >= -90*60*60 && pos.lat+v <= 90*60*60 ){
             ans.v=v;
             ans.pos.lat=pos.lat+v;ans.pos.longi=pos.longi-15;
         }else if(pos.lat+v>90*60*60){
@@ -114,7 +114,9 @@ vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, const Poi
 
 #include "match.cc"
 
-int main()
+int readsol(const char* file);
+
+int main(int argc, char **argv)
 {
 	scanf("%d%d", &nbTours, &nbSat);
 	
@@ -166,7 +168,7 @@ int main()
 		}
 	}
 	
-
+//FILE *f=fopen("precalc_
 for(int i=0;i<nbSat;i++){
    // printf("%d\n",i);
     for(int t=0;t<nbTours;t++){
@@ -178,7 +180,7 @@ for(int i=0;i<nbSat;i++){
             if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta )
                satel[i].targetsAtTime[t].push_back(iter->id);
         }
-    //printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
+    printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
     //if(satel[i].targetsAtTime[t].size() != 0)
     //printf("%d\n",satel[i].targetsAtTime[t].size());
     }
@@ -186,14 +188,19 @@ for(int i=0;i<nbSat;i++){
  }
 
 
+        if (argc == 2)
+          return readsol(argv[1]);
     louis l;
     l.sol();
+
+        // SOLVE PROBLEM
 
 
 	return 0;
 }
 
 int readsol(const char* file) {
+  printf("CHECK SOLUTION in %s\n", file);
   FILE* f = fopen(file, "r");
   int N;
   vector<pair<int, pair<int, int> > > V[42];
@@ -208,7 +215,7 @@ int readsol(const char* file) {
   // done points for collection
   set<Point> isDone[10002];
   // nb done for collection
-  int nbDone[10002];
+  unsigned int nbDone[10002];
 
   for (int i = 0; i < nbCollec; i++) {
     nbDone[i] = 0;
@@ -227,10 +234,10 @@ int readsol(const char* file) {
       if (abs(rel.lat) > satel[i].maxOrientChangeTotal || abs(rel.longi) > satel[i].maxOrientChangeTotal) {
         // we have problem
         printf("problem with satel %d\n", i);
-        printf("at time %d posx was %d and posy was %d\n", posx, posy);
-        printf("at time %d you want to take picture at %d %d\n", t, phi, lambda);
+        printf("at time %d posx was %d and posy was %d\n", t, posx, posy);
+        printf("at time %d you want to take picture at %d %d\n", V[i][j].first, phi, lambda);
         printf("which is OUT OF VIEW: %d %d\n", rel.lat, rel.longi);
-        exit(42);
+        return 42;
       }
       int dt = V[i][j].first - t;
       int mdelta = dt * satel[i].maxOrientChangePerTurn;
@@ -239,12 +246,12 @@ int readsol(const char* file) {
       if (abs(dx) > mdelta || abs(dy) > mdelta) {
         // we have problem
         printf("problem with satel %d\n", i);
-        printf("at time %d posx was %d and posy was %d\n", posx, posy);
-        printf("at time %d you want to take picture at %d %d\n", t, phi, lambda);
+        printf("at time %d posx was %d and posy was %d\n", t, posx, posy);
+        printf("at time %d you want to take picture at %d %d\n", V[i][j].first, phi, lambda);
         printf("which is in view at %d %d\n", rel.lat, rel.longi);
         printf("so the relative motion is %d %d in %d turns with velocity %d: PROBLEM\n",
             dx, dy, dt, satel[i].maxOrientChangePerTurn);
-        exit(42);
+        return 42;
       }
       // now mark the done collecs
       Point mypt = Point(phi, lambda);
@@ -270,11 +277,11 @@ int readsol(const char* file) {
   printf("solution ok\n");
   long score = 0;
   for (int c = 0; c <nbCollec; c++) {
-    printf("for collec %d done %d points of %d\n", c, nbDone[c], idLocCollec[c].size());
+    printf("for collec %d done %d points of %d\n", c, nbDone[c], (int) idLocCollec[c].size());
     if (nbDone[c] == idLocCollec[c].size()) {
       score += valCollec[c];
     }
   }
-  printf("FINAL SCORE %d\n", score);
-
+  printf("FINAL SCORE %ld\n", score);
+  return 0;
 }
