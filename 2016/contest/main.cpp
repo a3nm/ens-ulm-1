@@ -43,9 +43,6 @@ struct Point
         }
 };
 
-vector<Point> listeGlobPts;
-int nbPtsTt;
-
 struct State
 {
     Point pos;
@@ -75,7 +72,7 @@ struct Satellite
 	int maxOrientChangePerTurn; /* w */
 	int maxOrientChangeTotal; /* d */
         State allStates[604800];
-        vector<vector< Point > > targetsAtTime; 
+        vector<vector< int > > targetsAtTime; 
         Point where_is(int t, Point target){
             Point p;
             p.lat=target.lat - allStates[t].pos.lat;
@@ -91,6 +88,28 @@ vector<int> idLocCollec[10000];
 int valCollec[10000];
 vector<Interv> toursPossibles[10000];
 set<Point> allTargets;
+
+vector<Point> listeGlobPts;
+int nbPtsTt;
+vector<int> idDeMaCollec;
+
+vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, Point orientPrec)
+{
+	vector<int> res;
+	int delta = min(satel[idSatel].maxOrientChangeTotal, satel[idSatel].maxOrientChangePerTurn * (tourActuel - tourPrec));
+	Point posRef = satel[idSatel].allStates[tourActuel].pos;
+	
+	for(int i = 0; i < satel[idSatel].targetsAtTime[tourActuel].size(); i++)
+	{
+		int idPt = satel[idSatel].targetsAtTime[tourActuel][i];
+		Point pos = listeGlobPts[idPt];
+		
+		if(pos.longi <= posRef.longi + delta && pos.longi >= posRef.longi - delta
+			&& pos.lat <= posRef.lat + delta && pos.lat >= posRef.lat)
+			res.push_back(idPt);
+	}
+	return res;
+}
 
 int main()
 {
@@ -131,6 +150,8 @@ int main()
 			idLocCollec[i].push_back(nbPtsTt);
             allTargets.insert(Point(lat,longi,nbPtsTt));
             
+            idDeMaCollec.push_back(i);
+            
             nbPtsTt++;
 		}
 		
@@ -152,7 +173,7 @@ for(int i=0;i<nbSat;i++){
         set<Point>::iterator iterMax = allTargets.lower_bound(Point(pos.lat+delta,pos.longi+delta+1));
         for(;iter!=iterMax && iter != allTargets.end() ;iter++){
             if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta )
-               satel[i].targetsAtTime[t].push_back(*iter);
+               satel[i].targetsAtTime[t].push_back(iter->id);
         }
     //printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
     //if(satel[i].targetsAtTime[t].size() != 0)
