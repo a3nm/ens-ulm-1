@@ -5,6 +5,8 @@
 #include <string>
 #include <cmath>
 
+#include <set>
+
 #define phi lat
 #define lambda longi
 
@@ -27,6 +29,9 @@ struct Point
         int longi;//Lambda //EN SECONDES
     Point() { }
     Point(int lat, int longi) : lat(lat), longi(longi) { }
+    const bool operator< (const Point &other ) const{
+        return lat==other.lat ? longi<other.longi : lat<other.lat;
+        }
 };
 
 struct State
@@ -57,12 +62,15 @@ struct Satellite
     State state;
 	int maxOrientChangePerTurn; /* w */
 	int maxOrientChangeTotal; /* d */
+        State allStates[604800];
+        vector<vector< Point > > targetsAtTime; 
 };
 
 Satellite satel[100];
 vector<Point> locCollec[10000];
 int valCollec[10000];
 vector<Interv> toursPossibles[10000];
+set<Point> allTargets;
 
 int main()
 {
@@ -78,6 +86,9 @@ int main()
 		satel[i].state.v=vitesse;
 		satel[i].maxOrientChangePerTurn=maxOrientChangePerTurn;
 		satel[i].maxOrientChangeTotal=maxOrientChangeTotal;
+                satel[i].allStates[0]=satel[i].state;
+                for(int t=1;t<nbTours;t++)satel[i].allStates[t]=satel[i].allStates[t-1].next();
+                satel[i].targetsAtTime.resize(nbTours);
 	}
 	
 	scanf("%d", &nbCollec);
@@ -95,6 +106,7 @@ int main()
 			
 			scanf("%d%d", &lat, &longi);
 			locCollec[i].push_back(Point(lat, longi));
+                        allTargets.insert(Point(lat,longi));
 		}
 		
 		for(int j = 0; j < nbRange; j++)
@@ -105,5 +117,22 @@ int main()
 		}
 	}
 	
+
+for(int i=0;i<nbSat;i++){
+    for(int t=0;t<nbTours;t++){
+        Point pos = satel[i].allStates[t].pos;
+        int delta=min(satel[i].maxOrientChangePerTurn * t, satel[i].maxOrientChangeTotal);
+        set<Point>::iterator iter = allTargets.lower_bound(Point(pos.lat-delta,pos.longi-delta));//EFFETS DE BORDS LAT
+        set<Point>::iterator iterMax = allTargets.lower_bound(Point(pos.lat+delta,pos.longi+delta+1));//EFFETS DE BORDS LAT
+        for(;iter!=iterMax;iter++){
+            if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta )
+               satel[i].targetsAtTime[t].push_back(*iter);
+        }
+    }
+}
+
+
+
+
 	return 0;
 }
