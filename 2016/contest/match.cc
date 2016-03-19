@@ -11,6 +11,7 @@ class louis
   vector<int> assoc_pt ;
   vector<int> assoc_sat ;
   vector<bool> seen ;
+  map<int,int> access[42] ;
 
   bool sub_find_path(const ui sat )
   {
@@ -43,17 +44,20 @@ class louis
     sub_find_path(sat);
   }
 
-  void match()
+  void init_match()
   {
     assoc_pt.clear();
     assoc_pt.resize(nb_pts,-1);
     assoc_sat.clear();
     assoc_sat.resize(nbSat,-1);
-    for(size_t sat = 0 ; sat < graph.size() ; sat++ )
-      find_path(sat);
-    return ;
   }
 
+  void match()
+  {
+    for(size_t sat = 0 ; sat < graph.size() ; sat++ )
+      find_path(sat);
+  }
+  
   map<Point,ui> cur_pts ;
   vector<vector<ui> > objs ;
   ui nb_pts = 0 ;
@@ -75,7 +79,7 @@ public:
 
   vector<bool> done ;
   vector<pair<Point,pair<int,int> > > res;
-
+  
   void sol()
   {
     res.clear();
@@ -86,32 +90,29 @@ public:
       }
     done.clear();
     done.resize(nbPtsTt,false);
-    map<int,int> access[42] ;
     const int K = 10 ;
-    for(ui turn = 0 ; turn < nbTours ; turn+=K)
+    for(ui turn = 0 ; turn < nbTours ; turn++)
       {
 	objs.clear();
 	cur_pts.clear();
 	nb_pts = 0;
 	graph.clear();
-	
-	for(ui sat = 0 ; sat < nbSat ; sat++)
+	graph.resize(nbSat,vector<ui>());
+
+	init_match();
+	for(ui sub_turn = turn ; sub_turn < nbTours && sub_turn < turn+K ; sub_turn++)
 	  {
-	    graph.push_back(vector<ui>());
-	    for(ui sub_turn = turn ; sub_turn < nbTours && sub_turn < turn+K ; sub_turn++)
-	      listeAccessible(sat,sat_time[sat],turn,sat_pos[sat],access[sat]);
-	    for(const pair<int,int> pt : access[sat])
-	      if(!done[pt.first])
-		if(todoCollection[idDeMaCollec[pt.first]])
-		  {
-		    if(debug_louis)
-		      fprintf(stderr,"Adding pt!\n");
-		    
-		    graph[sat].push_back(tr(pt.first));
-		  }
+	    for(ui sat = 0 ; sat < nbSat ; sat++)
+	      {
+		listeAccessible(sat,sat_time[sat],sub_turn,sat_pos[sat],access[sat]);
+		for(const pair<int,int> pt : access[sat])
+		  if(access[sat] == sub_turn)
+		    if(!done[pt.first])
+		      if(todoCollection[idDeMaCollec[pt.first]] )
+			graph[sat].push_back(tr(pt.first));
+	      }
+	    match();
 	  }
-	
-	match();
 	for(ui sat = 0 ; sat < nbSat ; sat++)
 	  if(assoc_sat[sat] != -1)
 	    {
@@ -140,5 +141,6 @@ public:
       {
 	fprintf(f,"%d %d %d %d\n",r.first.lat,r.first.longi,r.second.first,r.second.second);
       }
+    fclose(f);
   }
 } ;
