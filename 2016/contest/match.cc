@@ -93,6 +93,8 @@ public:
 	    for(const int pt : listeAccessible(sat,sat_time[sat],turn,sat_pos[sat]))
 	      if(!done[pt])
 		{
+		  fprintf(stderr,"Adding pt!\n");
+		  
 		  graph[sat].push_back(tr(pt));
 		}
 	  }
@@ -103,6 +105,7 @@ public:
 	      for(int v : objs[assoc_sat[sat]])
 		done[v] = true ;
 	      const int pt_id = objs[assoc_sat[sat]][0] ;
+	      fprintf(stderr,"Adding res!\n");
 	      res.push_back( make_pair(listeGlobPts[pt_id],make_pair(turn,sat))) ;
 	      sat_time[sat] = turn ;
 	      sat_pos[sat] = listeGlobPts[pt_id] ;

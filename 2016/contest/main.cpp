@@ -95,20 +95,31 @@ vector<Point> listeGlobPts;
 int nbPtsTt;
 vector<int> idDeMaCollec;
 
+bool isAllowed(int id_coll, int t){
+    for(int i=0;i<toursPossibles[id_coll].size();i++){
+        if(toursPossibles[id_coll][i].tourDebut <= t && toursPossibles[id_coll][i].tourFin>=t)
+            return true;
+    }
+    return false;
+}
+
+
+
+
+
 vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orientPrec)
 {
 	vector<int> res;
-	int delta = min(satel[idSatel].maxOrientChangeTotal, satel[idSatel].maxOrientChangePerTurn * (tourActuel - tourPrec));
-	Point posRef = satel[idSatel].allStates[tourActuel].pos;
-	
-	for(int i = 0; i < satel[idSatel].targetsAtTime[tourActuel].size(); i++)
+	const int delta = satel[idSatel].maxOrientChangePerTurn * (tourActuel - tourPrec);
+	Point posRef = satel[idSatel].allStates[tourActuel].pos ;
+	posRef.lat+= orientPrec.lat;
+	posRef.longi+= orientPrec.longi;
+	for(int idPt : satel[idSatel].targetsAtTime[tourActuel])
 	{
-		int idPt = satel[idSatel].targetsAtTime[tourActuel][i];
-		Point pos = listeGlobPts[idPt];
-		
-		if(pos.longi <= posRef.longi + delta && pos.longi >= posRef.longi - delta
-			&& pos.lat <= posRef.lat + delta && pos.lat >= posRef.lat)
-			res.push_back(idPt);
+	  Point pos = listeGlobPts[idPt];
+	  if(pos.longi <= posRef.longi + delta && pos.longi >= posRef.longi - delta
+	     && pos.lat <= posRef.lat + delta && pos.lat >= posRef.lat - delta)
+	    res.push_back(idPt);
 	}
 	return res;
 }
@@ -179,10 +190,9 @@ for(int i=0;i<nbSat;i++){
         set<Point>::iterator iter = allTargets.lower_bound(Point(pos.lat-delta,pos.longi-delta));
         set<Point>::iterator iterMax = allTargets.lower_bound(Point(pos.lat+delta,pos.longi+delta+1));
         for(;iter!=iterMax && iter != allTargets.end() ;iter++){
-            if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta ) {
-              //printf("satel %d at time %d peut faire %d\n", i, t, iter->id);
-               satel[i].targetsAtTime[t].push_back(iter->id);
-            }
+            if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta )
+                if( isAllowed(idDeMaCollec[iter->id],t)) //if iter is allowed at time t
+                    satel[i].targetsAtTime[t].push_back(iter->id);
         }
 	//printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
     //if(satel[i].targetsAtTime[t].size() != 0)
