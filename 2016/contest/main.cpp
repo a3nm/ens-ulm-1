@@ -5,14 +5,45 @@
 #include <string>
 #include <cmath>
 
+#define phi lat
+#define lambda longi
+
 using namespace std;
 int nbTours, nbSat, nbCollec;
 
+struct Point
+{
+        int lat;//Phi // EN SECONDES
+        int longi;//Lambda //EN SECONDES
+};
+
+
+struct State
+{
+    Point pos;
+    int v;//vitesse EN SECONDES D'ARC PAR TOUR
+
+State next(){
+    State ans;
+    if(pos.lat + v >= 90*60*60 && pos.lat <= -90*60*60 ){
+        ans.v=v;
+        ans.pos.lat=pos.lat+v;ans.pos.longi=pos.longi-15;
+    }else if(pos.lat+v>90*60*60){
+        ans.v=-v;
+        ans.pos.lat=180*60*60-(pos.lat+v);ans.pos.longi=-180*60*60+pos.longi-15;
+    }else if(pos.lat+v < -90*60*60){
+        ans.v=-v;
+        ans.pos.lat=-180*60*60-(pos.lat+v);ans.pos.longi=-180*60*60+pos.longi-15;
+        }
+
+    return ans;
+}
+};
+
+
 struct Satellite
 {
-	int lat; /*phi*/
-	int longi; /*lambda*/
-	int vitesse; /* v */
+        State start;
 	int maxOrientChangePerTurn; /* w */
 	int maxOrientChangeTotal; /* d */
 };
