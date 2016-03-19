@@ -268,8 +268,8 @@ for(int i=0;i<nbSat;i++){
           printf("%d ", c);
         } else {
           // not fully done, keep with low proba
-          //todoCollection[c] = (!(rand() % 150));
-          todoCollection[c] = false;
+          todoCollection[c] = (!(rand() % 150));
+          //todoCollection[c] = false;
           ntodo += todoCollection[c];
         }
       }
