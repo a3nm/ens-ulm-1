@@ -140,5 +140,6 @@ public:
       {
 	fprintf(f,"%d %d %d %d\n",r.first.lat,r.first.longi,r.second.first,r.second.second);
       }
+    fclose(f);
   }
 } ;
