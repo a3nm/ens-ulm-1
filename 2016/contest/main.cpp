@@ -183,7 +183,16 @@ int main(int argc, char **argv)
 		}
 	}
 	
-//FILE *f=fopen("precalc_
+if(argc>=2){
+    FILE *f = fopen(argv[1],"r");
+    for(int i=0;i<nbSat;i++)
+        for(int t=0;t<nbTours;t++){
+            int n_truc,truc;
+            fscanf(f,"%d",&n_truc);
+            for(int k=0;k<n_truc;k++){fscanf(f,"%d",&truc);satel[i].targetsAtTime[t].push_back(truc);}
+        }
+    }else{
+
 for(int i=0;i<nbSat;i++){
    // printf("%d\n",i);
     for(int t=0;t<nbTours;t++){
@@ -196,15 +205,21 @@ for(int i=0;i<nbSat;i++){
                 if( isAllowed(idDeMaCollec[iter->id],t)) //if iter is allowed at time t
                     satel[i].targetsAtTime[t].push_back(iter->id);
         }
-	//printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
-    //if(satel[i].targetsAtTime[t].size() != 0)printf("%d\n",satel[i].targetsAtTime[t].size());
+        //PRECALCUL
+        printf("%d\n",satel[i].targetsAtTime[t].size());
+        for(int k=0;k<satel[i].targetsAtTime[t].size();k++)
+            printf("%d\n",satel[i].targetsAtTime[t][k]);
+
     }
 
+ 
  }
+ return 0;
+}
 
 
-        if (argc == 2)
-          return readsol(argv[1]);
+        if (argc == 3)
+          return readsol(argv[2]);
     if (!strcmp(argv[0], "./glouton"))
       return glouton();
     louis l;
