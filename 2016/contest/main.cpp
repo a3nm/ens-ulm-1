@@ -6,8 +6,38 @@
 #include <cmath>
 
 using namespace std;
+int nbTours;
 
 int main()
 {
+	scanf("%d%d", &nbTours, &nbSat);
+	
+	for(int i = 0; i < nbSat; i++)
+	{
+		int lat /*phi*/, longi /*lambda*/, vitesse, maxOrientChangePerTurn, maxOrientChangeTotal;
+		scanf("%d%d%d%d%d", &lat, &longi, &vitesse, &maxOrientChangePerTurn, &maxOrientChangeTotal);
+	}
+	
+	scanf("%d", &nbCollec);
+	
+	for(int i = 0; i < nbCollec; i++)
+	{
+		int valCol, nbLoc, nbRange;
+		scanf("%d%d%d", &valCol, &nbLoc, &nbRange);
+		
+		for(int j = 0; j < nbLoc; j++)
+		{
+			int lat /*phi*/, longi /*lambda*/;
+			
+			scanf("%d%d", &lat, &longi);
+		}
+		
+		for(int j = 0; j < nbRange; j++)
+		{
+			int tourDebut, tourFin; //inclus
+			scanf("%d%d", &tourDebut, &tourFin);
+		}
+	}
+	
 	return 0;
 }
