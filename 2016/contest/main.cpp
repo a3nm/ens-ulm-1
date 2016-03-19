@@ -96,7 +96,7 @@ vector<int> idDeMaCollec;
 
 bool isAllowed(int id_coll, int t){
     for(int i=0;i<toursPossibles[id_coll].size();i++){
-        if(toursPossibles[id_coll][i].tourdebut <= t && toursPossibles[id_coll][i].tourfin>=t)
+        if(toursPossibles[id_coll][i].tourDebut <= t && toursPossibles[id_coll][i].tourFin>=t)
             return true;
     }
     return false;
