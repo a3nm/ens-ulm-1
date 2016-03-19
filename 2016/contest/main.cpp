@@ -38,7 +38,6 @@ struct Point
         }
 };
 
-
 struct State
 {
     Point pos;
@@ -46,7 +45,7 @@ struct State
 
     State next(){
         State ans;
-        if(pos.lat + v >= 90*60*60 && pos.lat <= -90*60*60 ){
+        if(pos.lat + v >= -90*60*60 && pos.lat <= 90*60*60 ){
             ans.v=v;
             ans.pos.lat=pos.lat+v;ans.pos.longi=pos.longi-15;
         }else if(pos.lat+v>90*60*60){
@@ -69,6 +68,14 @@ struct Satellite
 	int maxOrientChangeTotal; /* d */
         State allStates[604800];
         vector<vector< Point > > targetsAtTime; 
+        Point where_is(int t, Point target){
+            Point p;
+            p.lat=target.lat - allStates[t].pos.lat;
+            p.longi=target.longi - allStates[t].pos.longi;
+            return p;
+        }
+
+
 };
 
 Satellite satel[100];
@@ -124,16 +131,19 @@ int main()
 	
 
 for(int i=0;i<nbSat;i++){
-    printf("%d\n",i);
+   // printf("%d\n",i);
     for(int t=0;t<nbTours;t++){
         Point pos = satel[i].allStates[t].pos;
         int delta=min(satel[i].maxOrientChangePerTurn * t, satel[i].maxOrientChangeTotal);
-        set<Point>::iterator iter = allTargets.lower_bound(Point(pos.lat-delta,pos.longi-delta));//EFFETS DE BORDS LAT
-        set<Point>::iterator iterMax = allTargets.lower_bound(Point(pos.lat+delta,pos.longi+delta+1));//EFFETS DE BORDS LAT
+        set<Point>::iterator iter = allTargets.lower_bound(Point(pos.lat-delta,pos.longi-delta));
+        set<Point>::iterator iterMax = allTargets.lower_bound(Point(pos.lat+delta,pos.longi+delta+1));
         for(;iter!=iterMax && iter != allTargets.end() ;iter++){
             if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta )
                satel[i].targetsAtTime[t].push_back(*iter);
         }
+    //printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
+    if(satel[i].targetsAtTime[t].size() != 0)
+    printf("%d\n",satel[i].targetsAtTime[t].size());
     }
 }
 
