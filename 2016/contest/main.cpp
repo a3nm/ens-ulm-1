@@ -97,17 +97,16 @@ vector<int> idDeMaCollec;
 vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orientPrec)
 {
 	vector<int> res;
-	int delta = min(satel[idSatel].maxOrientChangeTotal, satel[idSatel].maxOrientChangePerTurn * (tourActuel - tourPrec));
-	Point posRef = satel[idSatel].allStates[tourActuel].pos;
-	
-	for(int i = 0; i < satel[idSatel].targetsAtTime[tourActuel].size(); i++)
+	const int delta = satel[idSatel].maxOrientChangePerTurn * (tourActuel - tourPrec);
+	Point posRef = satel[idSatel].allStates[tourActuel].pos ;
+	posRef.lat+= orientPrec.lat;
+	posRef.longi+= orientPrec.longi;
+	for(int idPt : satel[idSatel].targetsAtTime[tourActuel])
 	{
-		int idPt = satel[idSatel].targetsAtTime[tourActuel][i];
-		Point pos = listeGlobPts[idPt];
-		
-		if(pos.longi <= posRef.longi + delta && pos.longi >= posRef.longi - delta
-			&& pos.lat <= posRef.lat + delta && pos.lat >= posRef.lat)
-			res.push_back(idPt);
+	  Point pos = listeGlobPts[idPt];
+	  if(pos.longi <= posRef.longi + delta && pos.longi >= posRef.longi - delta
+	     && pos.lat <= posRef.lat + delta && pos.lat >= posRef.lat)
+	    res.push_back(idPt);
 	}
 	return res;
 }
