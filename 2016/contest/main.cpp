@@ -189,7 +189,7 @@ for(int i=0;i<nbSat;i++){
         set<Point>::iterator iterMax = allTargets.lower_bound(Point(pos.lat+delta,pos.longi+delta+1));
         for(;iter!=iterMax && iter != allTargets.end() ;iter++){
             if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta )
-                if( isAllowed(idDeMaCollec[iter->id],t) //if iter is allowed at time t
+                if( isAllowed(idDeMaCollec[iter->id],t)) //if iter is allowed at time t
                     satel[i].targetsAtTime[t].push_back(iter->id);
         }
 	//printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
