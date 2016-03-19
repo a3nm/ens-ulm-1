@@ -109,7 +109,7 @@ bool isAllowed(int id_coll, int t){
 
 
 
-void listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orientPrec, vector<int> & res )
+void listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orientPrec, map<int,int> & res )
 {
 	const int delta = satel[idSatel].maxOrientChangePerTurn * (tourActuel - tourPrec);
 	Point posRef = satel[idSatel].allStates[tourActuel].pos ;
@@ -120,7 +120,8 @@ void listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orie
 	  Point pos = listeGlobPts[idPt];
 	  if(pos.longi <= posRef.longi + delta && pos.longi >= posRef.longi - delta
 	     && pos.lat <= posRef.lat + delta && pos.lat >= posRef.lat - delta)
-	    res.push_back(idPt);
+	    if(res.find(idPt) == res.end() )
+	      res[idPt]=tourActuel ;
 	}
 }
 
