@@ -86,7 +86,7 @@ public:
       }
     done.resize(nbPtsTt,false);
     map<int,int> access[42] ;
-    const int K = 10 ;
+    const int K = 1 ;
     for(ui turn = 0 ; turn < nbTours ; turn+=K)
       {
 	objs.clear();

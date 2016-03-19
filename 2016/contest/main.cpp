@@ -243,7 +243,7 @@ for(int i=0;i<nbSat;i++){
       l.sol();
       int new_score = readsol("", false, nbDone, l.res);
       printf("old score was %d new score is %d\n", score, new_score);
-      new_score = score;
+      score = new_score;
       // decide based on nbDone which tasks to do or not
       for (int c = 0; c < nbCollec; c++) {
         if (nbDone[c] == idLocCollec[c].size()) {
