@@ -7,5 +7,5 @@ g++ -std=c++14 main.cpp -Wall -O2
 for i in *.in ;
 do
     echo "Doing $i " ;
-    $EXEC < $i > ${i%%in}out ;
+    $EXEC precalc_${i%%in} < $i > ${i%%in}out ;
 done ;

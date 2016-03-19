@@ -187,12 +187,10 @@ int main(int argc, char **argv)
 	
 if(argc>=2){
     FILE *f = fopen(argv[1],"r");
-    for(int i=0;i<nbSat;i++)
-        for(int t=0;t<nbTours;t++){
-            int n_truc,truc;
-            fscanf(f,"%d",&n_truc);
+    int i, t, n_truc, truc;
+    while(2<fscanf(f,"%d%d%d",&i,&t,&n_truc)){
             for(int k=0;k<n_truc;k++){fscanf(f,"%d",&truc);satel[i].targetsAtTime[t].push_back(truc);}
-        }
+    }
     }else{
 
 for(int i=0;i<nbSat;i++){
@@ -210,7 +208,8 @@ for(int i=0;i<nbSat;i++){
                 }
         }
         //PRECALCUL
-        printf("%d\n",satel[i].targetsAtTime[t].size());
+        if(satel[i].targetsAtTime[t].size()) 
+            printf("%d %d %d\n",i,t,satel[i].targetsAtTime[t].size());
         for(int k=0;k<satel[i].targetsAtTime[t].size();k++)
             printf("%d\n",satel[i].targetsAtTime[t][k]);
 
