@@ -120,12 +120,13 @@ int main()
 	
 
 for(int i=0;i<nbSat;i++){
+    printf("%d\n",i);
     for(int t=0;t<nbTours;t++){
         Point pos = satel[i].allStates[t].pos;
         int delta=min(satel[i].maxOrientChangePerTurn * t, satel[i].maxOrientChangeTotal);
         set<Point>::iterator iter = allTargets.lower_bound(Point(pos.lat-delta,pos.longi-delta));//EFFETS DE BORDS LAT
         set<Point>::iterator iterMax = allTargets.lower_bound(Point(pos.lat+delta,pos.longi+delta+1));//EFFETS DE BORDS LAT
-        for(;iter!=iterMax;iter++){
+        for(;iter!=iterMax && iter != allTargets.end() ;iter++){
             if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta )
                satel[i].targetsAtTime[t].push_back(*iter);
         }
