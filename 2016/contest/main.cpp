@@ -257,6 +257,7 @@ for(int i=0;i<nbSat;i++){
       score = new_score;
       l.print(string(argv[2]));
       printf("SAVED SOLUTION WITH SCORE %d\n", score);
+      return 42;
       // decide based on nbDone which tasks to do or not
       int ndone= 0, ntodo = 0;
       printf("we did collections: ");
@@ -320,51 +321,69 @@ int readsol(const char* file, bool print, unsigned int nbDone[10002], vector<pai
   set<Point> isDone[10002];
   // nb done for collection
 
-  for (int i = 0; i < nbCollec; i++) {
-    nbDone[i] = 0;
-    for (unsigned int j = 0; j < idLocCollec[i].size(); j++) {
-      Point pt = listeGlobPts[idLocCollec[i][j]];
-      pointToCollec[pt].push_back(i);
+  for (int c = 0; c < nbCollec; c++) {
+    nbDone[c] = 0;
+    for (unsigned int j = 0; j < idLocCollec[c].size(); j++) {
+      Point pt = listeGlobPts[idLocCollec[c][j]];
+      pointToCollec[pt].push_back(c);
     }
   }
-  for (int i = 0; i < nbSat; i++) {
-    sort(V[i].begin(), V[i].end());
+  for (int s = 0; s < nbSat; s++) {
+    sort(V[s].begin(), V[s].end());
     int posx = 0, posy = 0, t = 0;
-    for (unsigned int j = 0; j < V[i].size(); j++) {
-      int phi = V[i][j].second.first;
-      int lambda = V[i][j].second.second;
-      Point rel = satel[i].where_is(V[i][j].first, Point(phi, lambda));
-      if (abs(rel.lat) > satel[i].maxOrientChangeTotal || abs(rel.longi) > satel[i].maxOrientChangeTotal) {
+    for (unsigned int j = 0; j < V[s].size(); j++) {
+      int phi = V[s][j].second.first;
+      int lambda = V[s][j].second.second;
+      Point rel = satel[s].where_is(V[s][j].first, Point(phi, lambda));
+      if (abs(rel.lat) > satel[s].maxOrientChangeTotal || abs(rel.longi) > satel[s].maxOrientChangeTotal) {
         // we have problem
-        printf("problem with satel %d\n", i);
+        printf("problem with satel %d\n", s);
         printf("at time %d posx was %d and posy was %d\n", t, posx, posy);
-        printf("at time %d you want to take picture at %d %d\n", V[i][j].first, phi, lambda);
+        printf("at time %d you want to take picture at %d %d\n", V[s][j].first, phi, lambda);
         printf("which is OUT OF VIEW: %d %d\n", rel.lat, rel.longi);
         return 42;
       }
-      int dt = V[i][j].first - t;
-      int mdelta = dt * satel[i].maxOrientChangePerTurn;
+      int dt = V[s][j].first - t;
+      int mdelta = dt * satel[s].maxOrientChangePerTurn;
       int dx = rel.lat - posx;
       int dy = rel.longi - posy;
       if (abs(dx) > mdelta || abs(dy) > mdelta) {
         // we have problem
-        printf("problem with satel %d\n", i);
+        printf("problem with satel %d\n", s);
         printf("at time %d posx was %d and posy was %d\n", t, posx, posy);
-        printf("at time %d you want to take picture at %d %d\n", V[i][j].first, phi, lambda);
+        printf("at time %d you want to take picture at %d %d\n", V[s][j].first, phi, lambda);
         printf("which is in view at %d %d\n", rel.lat, rel.longi);
         printf("so the relative motion is %d %d in %d turns with velocity %d: PROBLEM\n",
-            dx, dy, dt, satel[i].maxOrientChangePerTurn);
+            dx, dy, dt, satel[s].maxOrientChangePerTurn);
         return 42;
       }
       // now mark the done collecs
       Point mypt = Point(phi, lambda);
+      /*for (int c = 0; c < nbCollec; c++) {
+        for (int lo = 0; lo < idLocCollec[c].size(); lo++) {
+          Point pt = listeGlobPts[idLocCollec[c][lo]];
+          if (pt.lat == mypt.lat && pt.longi == mypt.longi) {
+            if (isDone[c].find(pt) != isDone[c].end())
+              continue;
+            for (unsigned int l = 0; l < toursPossibles[c].size(); l++) {
+              if (t >= toursPossibles[c][l].tourDebut && t <= toursPossibles[c][l].tourFin) {
+                // we are good!
+                isDone[c].insert(mypt);
+                nbDone[c]++;
+                break;
+              }
+            }
+          }
+        }
+      }*/
+
       for (unsigned int k = 0; k < pointToCollec[mypt].size(); k++) {
         int collec = pointToCollec[mypt][k];
         if (isDone[collec].find(mypt) != isDone[collec].end())
           continue; // already good
         // check if t is in right range
         for (unsigned int l = 0; l < toursPossibles[collec].size(); l++) {
-          if (t >= toursPossibles[collec][l].tourDebut && t <= toursPossibles[collec][l].tourFin) {
+          if (V[s][j].first >= toursPossibles[collec][l].tourDebut && V[s][j].first <= toursPossibles[collec][l].tourFin) {
             // we are good!
             isDone[collec].insert(mypt);
             nbDone[collec]++;
@@ -372,7 +391,8 @@ int readsol(const char* file, bool print, unsigned int nbDone[10002], vector<pai
           }
         }
       }
-      t = V[i][j].first;
+      
+      t = V[s][j].first;
       posx = rel.lat;
       posy = rel.longi;
     }
@@ -380,15 +400,17 @@ int readsol(const char* file, bool print, unsigned int nbDone[10002], vector<pai
   if (print)
     printf("solution ok\n");
   long score = 0;
+  int totaldone = 0;
   for (int c = 0; c <nbCollec; c++) {
     if(print)
       printf("for collec %d done %d points of %d\n", c, nbDone[c], (int) idLocCollec[c].size());
+    totaldone+=nbDone[c];
     if (nbDone[c] == idLocCollec[c].size()) {
       score += valCollec[c];
     }
   }
   if (print)
-  printf("FINAL SCORE %ld\n", score);
+  printf("FINAL SCORE %ld with %d points done\n", score, totaldone);
   return score;
 }
 
