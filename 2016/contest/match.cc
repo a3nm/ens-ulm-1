@@ -90,7 +90,7 @@ public:
       }
     done.clear();
     done.resize(nbPtsTt,false);
-    const int K = 10 ;
+    const int K = 100 ;
     for(ui turn = 0 ; turn < nbTours ; turn++)
       {
 	objs.clear();
@@ -106,7 +106,7 @@ public:
 	      {
 		listeAccessible(sat,sat_time[sat],sub_turn,sat_pos[sat],access[sat]);
 		for(const pair<int,int> pt : access[sat])
-		  if(access[sat] == sub_turn)
+		  if( pt.second == sub_turn)
 		    if(!done[pt.first])
 		      if(todoCollection[idDeMaCollec[pt.first]] )
 			graph[sat].push_back(tr(pt.first));
