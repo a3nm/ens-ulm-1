@@ -75,8 +75,10 @@ public:
 
   vector<bool> done ;
   vector<pair<Point,pair<int,int> > > res;
+
   void sol()
   {
+    res.clear();
     for(ui sat = 0 ; sat < nbSat ; sat++)
       {
 	sat_time[sat]=0;
@@ -99,12 +101,13 @@ public:
 	      listeAccessible(sat,sat_time[sat],turn,sat_pos[sat],access[sat]);
 	    for(const pair<int,int> pt : access[sat])
 	      if(!done[pt.first])
-		{
-		  if(debug_louis)
-		    fprintf(stderr,"Adding pt!\n");
-		  
-		  graph[sat].push_back(tr(pt.first));
-		}
+		if(todo_collection[idDeMaCollec[pt.first]])
+		  {
+		    if(debug_louis)
+		      fprintf(stderr,"Adding pt!\n");
+		    
+		    graph[sat].push_back(tr(pt.first));
+		  }
 	  }
 	
 	match();
@@ -125,7 +128,10 @@ public:
 	  access[sat].clear();
 
       }
-    
+  }
+
+  void print()
+  {
     printf("%llu\n",res.size());
     for(auto r : res)
       {
