@@ -6,7 +6,7 @@
 #include <cmath>
 
 using namespace std;
-int nbTours;
+int nbTours, nbSat, nbCollec;
 
 int main()
 {
