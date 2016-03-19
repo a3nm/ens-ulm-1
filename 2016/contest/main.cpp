@@ -19,6 +19,7 @@
 using namespace std;
 int nbTours, nbSat, nbCollec;
 
+bool todoCollection[10002];
 
 struct Interv
 {
@@ -129,7 +130,7 @@ void listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orie
 int readsol(const char* file, bool print, unsigned int nbDone[10002], vector<pair<Point, pair<int, int> > > result);
 
 int glouton(void);
-int glouton2(void);
+//int glouton2(void);
 
 int main(int argc, char **argv)
 {
@@ -227,18 +228,30 @@ for(int i=0;i<nbSat;i++){
           return 0;
         }
     if (!strcmp(argv[0], "./glouton"))
-      return glouton2();
+      return glouton();
 
     unsigned int nbDone[10002];
     int score = 0;
+      
+    for (int c = 0; c < nbCollec; c++) {
+      todoCollection[c] = true;
+    }
 
     while (true) {
       louis l;
-      vector<pair<Point, pair<int, int> > > result;
-      //result = l.sol();
       l.sol();
-      int new_score = readsol("", false, nbDone, result);
+      int new_score = readsol("", false, nbDone, l.res);
+      printf("old score was %d new score is %d\n", score, new_score);
+      new_score = score;
       // decide based on nbDone which tasks to do or not
+      for (int c = 0; c < nbCollec; c++) {
+        if (nbDone[c] == idLocCollec[c].size()) {
+          todoCollection[c] = true; // keep it
+        } else {
+          // not fully done, keep with low proba
+          todoCollection[c] = (!(rand() % 10));
+        }
+      }
     }
 
     return 0;
