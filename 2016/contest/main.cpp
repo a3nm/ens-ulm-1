@@ -256,6 +256,7 @@ for(int i=0;i<nbSat;i++){
         oldTodoCollection[c] = todoCollection[c];
       score = new_score;
       l.print(string(argv[2]));
+      printf("SAVED SOLUTION WITH SCORE %d\n", score);
       // decide based on nbDone which tasks to do or not
       int ndone= 0, ntodo = 0;
       printf("we did collections: ");
