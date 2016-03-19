@@ -129,7 +129,8 @@ for(int i=0;i<nbSat;i++){
             if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta )
                satel[i].targetsAtTime[t].push_back(*iter);
         }
-    printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
+    //printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
+    if(satel[i].targetsAtTime[t].size() != 0)
     printf("%d\n",satel[i].targetsAtTime[t].size());
     }
 }
