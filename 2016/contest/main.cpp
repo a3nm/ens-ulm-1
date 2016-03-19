@@ -18,6 +18,7 @@
 using namespace std;
 int nbTours, nbSat, nbCollec;
 
+
 struct Interv
 {
 	int tourDebut;
@@ -93,7 +94,7 @@ vector<Point> listeGlobPts;
 int nbPtsTt;
 vector<int> idDeMaCollec;
 
-vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, Point orientPrec)
+vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orientPrec)
 {
 	vector<int> res;
 	int delta = min(satel[idSatel].maxOrientChangeTotal, satel[idSatel].maxOrientChangePerTurn * (tourActuel - tourPrec));
@@ -110,6 +111,8 @@ vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, Point ori
 	}
 	return res;
 }
+
+#include "match.cc"
 
 int main()
 {
@@ -179,9 +182,12 @@ for(int i=0;i<nbSat;i++){
     //if(satel[i].targetsAtTime[t].size() != 0)
     //printf("%d\n",satel[i].targetsAtTime[t].size());
     }
-}
+
+ }
 
 
+    louis l;
+    l.sol();
 
 
 	return 0;
