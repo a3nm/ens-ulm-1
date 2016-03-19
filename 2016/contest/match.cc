@@ -75,35 +75,41 @@ public:
 
   vector<bool> done ;
   vector<pair<Point,pair<int,int> > > res;
+
   void sol()
   {
+    res.clear();
     for(ui sat = 0 ; sat < nbSat ; sat++)
       {
 	sat_time[sat]=0;
 	sat_pos[sat]=Point();
       }
     done.resize(nbPtsTt,false);
-    vector<int> access ;
-    for(ui turn = 0 ; turn < nbTours ; turn++)
+    map<int,int> access[42] ;
+    const int K = 10 ;
+    for(ui turn = 0 ; turn < nbTours ; turn+=K)
       {
 	objs.clear();
 	cur_pts.clear();
 	nb_pts = 0;
 	graph.clear();
+	
 	for(ui sat = 0 ; sat < nbSat ; sat++)
 	  {
 	    graph.push_back(vector<ui>());
-	    listeAccessible(sat,sat_time[sat],turn,sat_pos[sat],access);
-	    for(const int pt : access)
-	      if(!done[pt])
-		{
-		  if(debug_louis)
-		    fprintf(stderr,"Adding pt!\n");
-		  
-		  graph[sat].push_back(tr(pt));
-		}
-	    access.clear();
+	    for(ui sub_turn = turn ; sub_turn < nbTours && sub_turn < turn+K ; sub_turn++)
+	      listeAccessible(sat,sat_time[sat],turn,sat_pos[sat],access[sat]);
+	    for(const pair<int,int> pt : access[sat])
+	      if(!done[pt.first])
+		if(todo_collection[idDeMaCollec[pt.first]])
+		  {
+		    if(debug_louis)
+		      fprintf(stderr,"Adding pt!\n");
+		    
+		    graph[sat].push_back(tr(pt.first));
+		  }
 	  }
+	
 	match();
 	for(ui sat = 0 ; sat < nbSat ; sat++)
 	  if(assoc_sat[sat] != -1)
@@ -113,12 +119,19 @@ public:
 	      const int pt_id = objs[assoc_sat[sat]][0] ;
 	      if(debug_louis)
 		fprintf(stderr,"Adding res!\n");
-	      res.push_back( make_pair(listeGlobPts[pt_id],make_pair(turn,sat))) ;
-	      sat_time[sat] = turn ;
-	      sat_pos[sat] = satel[sat].where_is(turn,listeGlobPts[pt_id]) ;
+	      res.push_back( make_pair(listeGlobPts[pt_id],
+				       make_pair(access[sat][pt_id],sat))) ;
+	      sat_time[sat] = access[sat][pt_id] ;
+	      sat_pos[sat] = satel[sat].where_is(access[sat][pt_id],listeGlobPts[pt_id]) ;
 	    }
+	for(ui sat = 0 ; sat < nbSat ; sat++)
+	  access[sat].clear();
+
       }
-    
+  }
+
+  void print()
+  {
     printf("%llu\n",res.size());
     for(auto r : res)
       {
