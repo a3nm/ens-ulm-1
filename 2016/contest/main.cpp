@@ -8,6 +8,17 @@
 using namespace std;
 int nbTours, nbSat, nbCollec;
 
+struct Satellite
+{
+	int lat; /*phi*/
+	int longi; /*lambda*/
+	int vitesse; /* v */
+	int maxOrientChangePerTurn; /* w */
+	int maxOrientChangeTotal; /* d */
+};
+
+Satellite satel[100];
+
 int main()
 {
 	scanf("%d%d", &nbTours, &nbSat);
