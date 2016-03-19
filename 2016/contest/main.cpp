@@ -71,6 +71,14 @@ struct Satellite
 	int maxOrientChangeTotal; /* d */
         State allStates[604800];
         vector<vector< Point > > targetsAtTime; 
+        Point where_is(int t, Point target){
+            Point p;
+            p.lat=target.lat - allStates[t].pos.lat;
+            p.longi=target.longi - allStates[t].pos.longi;
+            return p;
+        }
+
+
 };
 
 Satellite satel[100];
