@@ -109,9 +109,8 @@ bool isAllowed(int id_coll, int t){
 
 
 
-vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orientPrec)
+void listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orientPrec, vector<int> & res )
 {
-	vector<int> res;
 	const int delta = satel[idSatel].maxOrientChangePerTurn * (tourActuel - tourPrec);
 	Point posRef = satel[idSatel].allStates[tourActuel].pos ;
 	posRef.lat+= orientPrec.lat;
@@ -123,7 +122,6 @@ vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, const Poi
 	     && pos.lat <= posRef.lat + delta && pos.lat >= posRef.lat - delta)
 	    res.push_back(idPt);
 	}
-	return res;
 }
 
 #include "match.cc"
@@ -202,8 +200,10 @@ for(int i=0;i<nbSat;i++){
         set<Point>::iterator iterMax = allTargets.lower_bound(Point(pos.lat+delta,pos.longi+delta+1));
         for(;iter!=iterMax && iter != allTargets.end() ;iter++){
             if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta )
-                if( isAllowed(idDeMaCollec[iter->id],t)) //if iter is allowed at time t
+                if( isAllowed(idDeMaCollec[iter->id],t)) {//if iter is allowed at time t
                     satel[i].targetsAtTime[t].push_back(iter->id);
+            //printf("someone can do %d\n", iter->id);
+                }
         }
         //PRECALCUL
         printf("%d\n",satel[i].targetsAtTime[t].size());
@@ -361,4 +361,5 @@ int glouton() {
     printf("%d %d %d %d\n", result[i].first.lat, result[i].first.longi, result[i].second.first, result[i].second.second);
   return 0;
 }
+
 
