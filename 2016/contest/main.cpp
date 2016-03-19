@@ -7,6 +7,10 @@
 
 #include <set>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #define phi lat
 #define lambda longi
 
@@ -137,4 +141,36 @@ for(int i=0;i<nbSat;i++){
 
 
 	return 0;
+}
+
+int readsol(const char* file) {
+  FILE* f = fopen(file, "r");
+  int N;
+  vector<pair<int, pair<int, int> > > V[42];
+  fscanf(f, "%d", &N);
+  for (int i = 0; i < N; i++) {
+    int phi, lambda, t, id;
+    fscanf(f, "%d%d%d%d", &phi, &lambda, &t, &id);
+    V[id].push_back(make_pair(t, make_pair(phi, lambda)));
+  }
+  fclose(f);
+  for (int i = 0; i < nbSat; i++) {
+    sort(V[i].begin(), V[i].end());
+    int posx = 0, posy = 0, t = 0;
+    for (unsigned int j = 0; j < V[i].size(); j++) {
+      int phi = V[i][j].second.first;
+      int lambda = V[i][j].second.second;
+      Point rel = satel[i].where_is(t, Point(phi, lambda));
+      if (abs(rel.lat) > satel[i].maxOrientChangeTotal || abs(rel.longi) > satel[i].maxOrientChangeTotal) {
+        // we have problem
+        printf("problem with satel %d\n", i);
+        printf("at time %d posx was %d and posy was %d\n", posx, posy);
+        printf("at time %d you want to take picture at %d %d\n", t, phi, lambda);
+        printf("which is out of view: %d %d\n", rel.lat, rel.longi);
+        exit(42);
+      }
+        
+    }
+  }
+
 }
