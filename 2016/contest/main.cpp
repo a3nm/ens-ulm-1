@@ -285,3 +285,28 @@ int readsol(const char* file) {
   printf("FINAL SCORE %ld\n", score);
   return 0;
 }
+
+int glouton() {
+  int satposx[50], satposy[50], satfree[50];
+  set<int> doneObj;
+  for (int i = 0; i < nbSat; i++)
+    satposx[i] = satposy[i] = satfree[i] = 0;
+  for (int t = 0; t < nbTours; t++) {
+    for (int s = 0; s < nbSat; s++) {
+      if (satfree[s] > t)
+        continue;
+      // choose an objective for s
+      vector<int> targets = satel[s].targetsAtTime[t];
+      for (unsigned int o = 0; o < targets.size(); o++) {
+        if (doneObj.find(targets[o]) != doneObj.end()) {
+          // can we get there?
+          Point rel = satel[s].where_is(t, listeGlobPts[o]);
+          int dt = t - satfree[s];
+          int w = satel[s].maxOrientChangePerTurn;
+          // TODO
+        }
+      }
+    }
+  }
+}
+
