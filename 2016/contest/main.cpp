@@ -176,10 +176,26 @@ int readsol(const char* file) {
         printf("problem with satel %d\n", i);
         printf("at time %d posx was %d and posy was %d\n", posx, posy);
         printf("at time %d you want to take picture at %d %d\n", t, phi, lambda);
-        printf("which is out of view: %d %d\n", rel.lat, rel.longi);
+        printf("which is OUT OF VIEW: %d %d\n", rel.lat, rel.longi);
         exit(42);
       }
-        
+      int dt = V[i][j].first - t;
+      int mdelta = dt * satel[i].maxOrientChangePerTurn;
+      int dx = rel.lat - posx;
+      int dy = rel.longi - posy;
+      if (abs(dx) > mdelta || abs(dy) > mdelta) {
+        // we have problem
+        printf("problem with satel %d\n", i);
+        printf("at time %d posx was %d and posy was %d\n", posx, posy);
+        printf("at time %d you want to take picture at %d %d\n", t, phi, lambda);
+        printf("which is in view at %d %d\n", rel.lat, rel.longi);
+        printf("so the relative motion is %d %d in %d turns with velocity %d: PROBLEM\n",
+            dx, dy, dt, satel[i].maxOrientChangePerTurn);
+        exit(42);
+      }
+      t = V[i][j].first;
+      posx = rel.lat;
+      posy = rel.longi;
     }
   }
 
