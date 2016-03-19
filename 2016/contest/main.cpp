@@ -50,7 +50,7 @@ struct State
 
     State next(){
         State ans;
-        if(pos.lat + v >= -90*60*60 && pos.lat <= 90*60*60 ){
+        if(pos.lat + v >= -90*60*60 && pos.lat+v <= 90*60*60 ){
             ans.v=v;
             ans.pos.lat=pos.lat+v;ans.pos.longi=pos.longi-15;
         }else if(pos.lat+v>90*60*60){
@@ -178,7 +178,7 @@ for(int i=0;i<nbSat;i++){
             if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta )
                satel[i].targetsAtTime[t].push_back(iter->id);
         }
-    //printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
+    printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
     //if(satel[i].targetsAtTime[t].size() != 0)
     //printf("%d\n",satel[i].targetsAtTime[t].size());
     }
