@@ -131,12 +131,14 @@ public:
       }
   }
 
-  void print()
+  void print(string s)
   {
-    printf("%llu\n",res.size());
+    
+    FILE * f = fopen(("sol_"+s).c_str(),"w");
+    fprintf(f,"%llu\n",res.size());
     for(auto r : res)
       {
-	printf("%d %d %d %d\n",r.first.lat,r.first.longi,r.second.first,r.second.second);
+	fprintf(f,"%d %d %d %d\n",r.first.lat,r.first.longi,r.second.first,r.second.second);
       }
   }
 } ;
