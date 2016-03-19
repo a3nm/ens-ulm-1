@@ -47,15 +47,16 @@ class louis
   void init_match()
   {
     assoc_pt.clear();
-    assoc_pt.resize(nb_pts,-1);
     assoc_sat.clear();
     assoc_sat.resize(nbSat,-1);
   }
 
   void match()
   {
+    assoc_pt.resize(nb_pts,-1);
     for(size_t sat = 0 ; sat < graph.size() ; sat++ )
-      find_path(sat);
+      if(assoc_sat[sat] == -1 )
+	find_path(sat);
   }
   
   map<Point,ui> cur_pts ;
@@ -90,7 +91,7 @@ public:
       }
     done.clear();
     done.resize(nbPtsTt,false);
-    const int K = 100 ;
+    const int K = 10 ;
     for(ui turn = 0 ; turn < nbTours ; turn++)
       {
 	objs.clear();
