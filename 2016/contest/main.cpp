@@ -63,7 +63,7 @@ struct State
             ans.pos.lat=-180*60*60-(pos.lat+v);ans.pos.longi=-180*60*60+pos.longi-15;
         }
         if(ans.pos.longi < -648000)ans.pos.longi+=360*60*60;
-        if(ans.pos.longi > -647999)ans.pos.longi-=360*60*60;
+        if(ans.pos.longi > 647999)ans.pos.longi-=360*60*60;
 
     return ans;
     }
@@ -193,8 +193,10 @@ for(int i=0;i<nbSat;i++){
         set<Point>::iterator iterMax = allTargets.lower_bound(Point(pos.lat+delta,pos.longi+delta+1));
         for(;iter!=iterMax && iter != allTargets.end() ;iter++){
             if(abs(iter->lat - pos.lat) <= delta && abs(iter->longi - pos.longi) <= delta )
-                if( isAllowed(idDeMaCollec[iter->id],t)) //if iter is allowed at time t
+                if( isAllowed(idDeMaCollec[iter->id],t)) {//if iter is allowed at time t
                     satel[i].targetsAtTime[t].push_back(iter->id);
+            //printf("someone can do %d\n", iter->id);
+                }
         }
 	//printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
     //if(satel[i].targetsAtTime[t].size() != 0)
@@ -333,6 +335,44 @@ int glouton() {
           continue;  // objective not doable
         // ok, go there
         satfree[s] = t;
+        satposx[s] = rel.lat;
+        satposy[s] = rel.longi;
+        doneObj.insert(o);
+        result.push_back(make_pair(listeGlobPts[o], make_pair(t, s)));
+        // TODO may have done other things
+        break;
+      }
+    }
+  }
+  printf("%d\n", result.size());
+  for (unsigned int i = 0; i < result.size(); i++)
+    printf("%d %d %d %d\n", result[i].first.lat, result[i].first.longi, result[i].second.first, result[i].second.second);
+  return 0;
+}
+
+
+int glouton2() {
+  vector<pair<Point, pair<int, int> > > result;
+  int satposx[50], satposy[50], satfree[50];
+  set<int> doneObj;
+  for (int i = 0; i < nbSat; i++)
+    satposx[i] = satposy[i] = satfree[i] = 0;
+  for (int t = 0; t < nbTours; t++) {
+    for (int s = 0; s < nbSat; s++) {
+      if (satfree[s] > t)
+        continue;
+      // choose an objective for s
+      vector<int> targets = satel[s].targetsAtTime[t];
+      // assuming that the objectives are OK
+      //if (t == 373)
+        //printf("sat %d at time %d can do %d targets\n", s, t, targets.size());
+      vector<int> myobj = listeAccessible(s, satfree[s], t, Point(satposx[s], satposy[s]));
+      for (unsigned int no = 0; no < myobj.size(); no++) {
+        int o = myobj[no];
+        if (doneObj.find(o) != doneObj.end())
+          continue; // done already
+        satfree[s] = t;
+        Point rel = satel[s].where_is(t, listeGlobPts[o]);
         satposx[s] = rel.lat;
         satposy[s] = rel.longi;
         doneObj.insert(o);
