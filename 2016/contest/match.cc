@@ -101,7 +101,7 @@ public:
 	      listeAccessible(sat,sat_time[sat],turn,sat_pos[sat],access[sat]);
 	    for(const pair<int,int> pt : access[sat])
 	      if(!done[pt.first])
-		if(todo_collection[idDeMaCollec[pt.first]])
+		if(todoCollection[idDeMaCollec[pt.first]])
 		  {
 		    if(debug_louis)
 		      fprintf(stderr,"Adding pt!\n");
