@@ -8,6 +8,12 @@
 using namespace std;
 int nbTours, nbSat, nbCollec;
 
+struct Interv
+{
+	int tourDebut;
+	int tourFin;
+};
+
 struct Satellite
 {
 	int lat; /*phi*/
@@ -27,6 +33,12 @@ int main()
 	{
 		int lat /*phi*/, longi /*lambda*/, vitesse, maxOrientChangePerTurn, maxOrientChangeTotal;
 		scanf("%d%d%d%d%d", &lat, &longi, &vitesse, &maxOrientChangePerTurn, &maxOrientChangeTotal);
+		
+		satel[i].lat=lat;
+		satel[i].longi=longi;
+		satel[i].vitesse=vitesse;
+		satel[i].maxOrientChangePerTurn=maxOrientChangePerTurn;
+		satel[i].maxOrientChangeTotal=maxOrientChangeTotal;
 	}
 	
 	scanf("%d", &nbCollec);
@@ -36,11 +48,14 @@ int main()
 		int valCol, nbLoc, nbRange;
 		scanf("%d%d%d", &valCol, &nbLoc, &nbRange);
 		
+		valCollec[i]=valCol;
+		
 		for(int j = 0; j < nbLoc; j++)
 		{
 			int lat /*phi*/, longi /*lambda*/;
 			
 			scanf("%d%d", &lat, &longi);
+			coll
 		}
 		
 		for(int j = 0; j < nbRange; j++)
