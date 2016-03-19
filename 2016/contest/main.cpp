@@ -229,7 +229,7 @@ int readsol(const char* file) {
     for (unsigned int j = 0; j < V[i].size(); j++) {
       int phi = V[i][j].second.first;
       int lambda = V[i][j].second.second;
-      Point rel = satel[i].where_is(t, Point(phi, lambda));
+      Point rel = satel[i].where_is(V[i][j].first, Point(phi, lambda));
       if (abs(rel.lat) > satel[i].maxOrientChangeTotal || abs(rel.longi) > satel[i].maxOrientChangeTotal) {
         // we have problem
         printf("problem with satel %d\n", i);
@@ -286,6 +286,7 @@ int readsol(const char* file) {
 }
 
 int glouton() {
+  vector<pair<Point, pair<int, int> > > result;
   int satposx[50], satposy[50], satfree[50];
   set<int> doneObj;
   for (int i = 0; i < nbSat; i++)
@@ -296,16 +297,31 @@ int glouton() {
         continue;
       // choose an objective for s
       vector<int> targets = satel[s].targetsAtTime[t];
+      // assuming that the objectives are OK
       for (unsigned int o = 0; o < targets.size(); o++) {
         if (doneObj.find(targets[o]) != doneObj.end()) {
           // can we get there?
           Point rel = satel[s].where_is(t, listeGlobPts[o]);
           int dt = t - satfree[s];
           int w = satel[s].maxOrientChangePerTurn;
-          // TODO
+          int maxdelta = dt * w;
+          int dx = abs(satposx[s] - rel.lat);
+          int dy = abs(satposy[s] - rel.longi);
+          if (dx > maxdelta || dy > maxdelta)
+            continue;  // objective not doable
+          // ok, go there
+          satfree[s] = t;
+          satposx[s] = rel.lat;
+          satposy[s] = rel.longi;
+          doneObj.insert(o);
+          result.push_back(make_pair(listeGlobPts[o], make_pair(t, s)));
+          // TODO may have done other things
+          break;
         }
       }
     }
   }
+  for (unsigned int i = 0; i < result.size(); i++)
+    printf("%d %d %d %d\n", result[i].first.lat, result[i].first.longi, result[i].second.first, result[i].second.second);
 }
 
