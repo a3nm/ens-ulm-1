@@ -23,21 +23,21 @@ struct State
     Point pos;
     int v;//vitesse EN SECONDES D'ARC PAR TOUR
 
-State next(){
-    State ans;
-    if(pos.lat + v >= 90*60*60 && pos.lat <= -90*60*60 ){
-        ans.v=v;
-        ans.pos.lat=pos.lat+v;ans.pos.longi=pos.longi-15;
-    }else if(pos.lat+v>90*60*60){
-        ans.v=-v;
-        ans.pos.lat=180*60*60-(pos.lat+v);ans.pos.longi=-180*60*60+pos.longi-15;
-    }else if(pos.lat+v < -90*60*60){
-        ans.v=-v;
-        ans.pos.lat=-180*60*60-(pos.lat+v);ans.pos.longi=-180*60*60+pos.longi-15;
+    State next(){
+        State ans;
+        if(pos.lat + v >= 90*60*60 && pos.lat <= -90*60*60 ){
+            ans.v=v;
+            ans.pos.lat=pos.lat+v;ans.pos.longi=pos.longi-15;
+        }else if(pos.lat+v>90*60*60){
+            ans.v=-v;
+            ans.pos.lat=180*60*60-(pos.lat+v);ans.pos.longi=-180*60*60+pos.longi-15;
+        }else if(pos.lat+v < -90*60*60){
+            ans.v=-v;
+            ans.pos.lat=-180*60*60-(pos.lat+v);ans.pos.longi=-180*60*60+pos.longi-15;
         }
 
     return ans;
-}
+    }
 };
 
 
