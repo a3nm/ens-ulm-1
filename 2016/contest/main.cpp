@@ -29,7 +29,6 @@ struct Point
     Point(int lat, int longi) : lat(lat), longi(longi) { }
 };
 
-
 struct State
 {
     Point pos;
