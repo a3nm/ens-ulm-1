@@ -163,7 +163,7 @@ int main()
 		}
 	}
 	
-FILE *f=fopen("precalc_
+//FILE *f=fopen("precalc_
 for(int i=0;i<nbSat;i++){
    // printf("%d\n",i);
     for(int t=0;t<nbTours;t++){
