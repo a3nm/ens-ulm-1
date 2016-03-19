@@ -131,7 +131,7 @@ void listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orie
 
 int readsol(const char* file, bool print, unsigned int nbDone[10002], vector<pair<Point, pair<int, int> > > result);
 
-int glouton(void);
+vector<pair<Point, pair<int, int> > > glouton();
 //int glouton2(void);
 
 int main(int argc, char **argv)
@@ -228,9 +228,8 @@ for(int i=0;i<nbSat;i++){
           readsol(argv[3], true, nbDone, result);
           return 0;
         }
-    if (!strcmp(argv[0], "./glouton"))
-      return glouton();
 
+    vector<pair<Point, pair<int, int> > > result;
     unsigned int nbDone[10002];
     int score = 0;
       
@@ -241,8 +240,13 @@ for(int i=0;i<nbSat;i++){
 
     while (true) {
       louis l;
-      l.sol();
-      int new_score = readsol("", false, nbDone, l.res);
+      if (!strcmp(argv[0], "./glouton"))
+        result = glouton();
+      else {
+        l.sol();
+        result = l.res;
+      }
+      int new_score = readsol("", false, nbDone, result);
       printf("old score was %d new score is %d\n", score, new_score);
       if (score > new_score) {
         // crap; reset and retry
@@ -255,7 +259,17 @@ for(int i=0;i<nbSat;i++){
       for (int c = 0; c < nbCollec; c++)
         oldTodoCollection[c] = todoCollection[c];
       score = new_score;
-      l.print(string(argv[2]));
+
+
+      if (!strcmp(argv[0], "./glouton")) {
+        FILE * feufeu = fopen(("sol_"+string(argv[2])).c_str(),"w");
+        fprintf(feufeu, "%d\n", result.size());
+        for (unsigned int i = 0; i < result.size(); i++)
+          fprintf(feufeu, "%d %d %d %d\n", result[i].first.lat, result[i].first.longi, result[i].second.first, result[i].second.second);
+        fclose(feufeu);
+      } else  {
+      l.print(string(argv[2])); }
+
       printf("SAVED SOLUTION WITH SCORE %d\n", score);
       // decide based on nbDone which tasks to do or not
       int ndone= 0, ntodo = 0;
@@ -264,11 +278,11 @@ for(int i=0;i<nbSat;i++){
         if (nbDone[c] == idLocCollec[c].size()) {
           ndone++;
           ntodo++;
-          todoCollection[c] = true; // keep it
+          todoCollection[c] = !(!(rand() % 150)); // keep it
           printf("%d ", c);
         } else {
           // not fully done, keep with low proba
-          todoCollection[c] = (!(rand() % 150));
+          todoCollection[c] = (!(rand() % 30));
           //todoCollection[c] = false;
           ntodo += todoCollection[c];
         }
@@ -413,7 +427,7 @@ int readsol(const char* file, bool print, unsigned int nbDone[10002], vector<pai
   return score;
 }
 
-int glouton() {
+vector<pair<Point, pair<int, int> > > glouton() {
   vector<pair<Point, pair<int, int> > > result;
   int satposx[50], satposy[50], satfree[50];
   set<int> doneObj;
@@ -430,6 +444,8 @@ int glouton() {
         //printf("sat %d at time %d can do %d targets\n", s, t, targets.size());
       for (unsigned int no = 0; no < targets.size(); no++) {
         int o = targets[no];
+        if (!todoCollection[idDeMaCollec[o]])
+          continue; // don't do this
         if (doneObj.find(o) != doneObj.end())
           continue; // done already
         // can we get there?
@@ -453,10 +469,7 @@ int glouton() {
       }
     }
   }
-  printf("%d\n", result.size());
-  for (unsigned int i = 0; i < result.size(); i++)
-    printf("%d %d %d %d\n", result[i].first.lat, result[i].first.longi, result[i].second.first, result[i].second.second);
-  return 0;
+  return result;
 }
 
 

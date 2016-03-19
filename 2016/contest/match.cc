@@ -91,7 +91,7 @@ public:
       }
     done.clear();
     done.resize(nbPtsTt,false);
-    const int K = 1 ;
+    const int K = 5 ;
     for(ui turn = 0 ; turn < nbTours ; turn++)
       {
 	objs.clear();
