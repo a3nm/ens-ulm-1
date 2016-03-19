@@ -83,6 +83,7 @@ public:
 	sat_pos[sat]=Point();
       }
     done.resize(nbPtsTt,false);
+    vector<int> access ;
     for(ui turn = 0 ; turn < nbTours ; turn++)
       {
 	objs.clear();
@@ -92,7 +93,8 @@ public:
 	for(ui sat = 0 ; sat < nbSat ; sat++)
 	  {
 	    graph.push_back(vector<ui>());
-	    for(const int pt : listeAccessible(sat,sat_time[sat],turn,sat_pos[sat]))
+	    listeAccessible(sat,sat_time[sat],turn,sat_pos[sat],access);
+	    for(const int pt : access)
 	      if(!done[pt])
 		{
 		  if(debug_louis)
@@ -100,6 +102,7 @@ public:
 		  
 		  graph[sat].push_back(tr(pt));
 		}
+	    access.clear();
 	  }
 	match();
 	for(ui sat = 0 ; sat < nbSat ; sat++)
@@ -112,7 +115,7 @@ public:
 		fprintf(stderr,"Adding res!\n");
 	      res.push_back( make_pair(listeGlobPts[pt_id],make_pair(turn,sat))) ;
 	      sat_time[sat] = turn ;
-	      sat_pos[sat] = listeGlobPts[pt_id] ;
+	      sat_pos[sat] = satel[sat].where_is(turn,listeGlobPts[pt_id]) ;
 	    }
       }
     

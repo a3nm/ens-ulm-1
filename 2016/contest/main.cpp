@@ -109,9 +109,8 @@ bool isAllowed(int id_coll, int t){
 
 
 
-vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orientPrec)
+void listeAccessible(int idSatel, int tourPrec, int tourActuel, const Point orientPrec, vector<int> & res )
 {
-	vector<int> res;
 	const int delta = satel[idSatel].maxOrientChangePerTurn * (tourActuel - tourPrec);
 	Point posRef = satel[idSatel].allStates[tourActuel].pos ;
 	posRef.lat+= orientPrec.lat;
@@ -123,7 +122,6 @@ vector<int> listeAccessible(int idSatel, int tourPrec, int tourActuel, const Poi
 	     && pos.lat <= posRef.lat + delta && pos.lat >= posRef.lat - delta)
 	    res.push_back(idPt);
 	}
-	return res;
 }
 
 #include "match.cc"
@@ -185,7 +183,16 @@ int main(int argc, char **argv)
 		}
 	}
 	
-//FILE *f=fopen("precalc_
+if(argc>=2){
+    FILE *f = fopen(argv[1],"r");
+    for(int i=0;i<nbSat;i++)
+        for(int t=0;t<nbTours;t++){
+            int n_truc,truc;
+            fscanf(f,"%d",&n_truc);
+            for(int k=0;k<n_truc;k++){fscanf(f,"%d",&truc);satel[i].targetsAtTime[t].push_back(truc);}
+        }
+    }else{
+
 for(int i=0;i<nbSat;i++){
    // printf("%d\n",i);
     for(int t=0;t<nbTours;t++){
@@ -200,17 +207,23 @@ for(int i=0;i<nbSat;i++){
             //printf("someone can do %d\n", iter->id);
                 }
         }
-	//printf("%d %d\n",satel[i].allStates[t].pos.lat,satel[i].allStates[t].pos.longi);
-    //if(satel[i].targetsAtTime[t].size() != 0)printf("%d\n",satel[i].targetsAtTime[t].size());
+        //PRECALCUL
+        printf("%d\n",satel[i].targetsAtTime[t].size());
+        for(int k=0;k<satel[i].targetsAtTime[t].size();k++)
+            printf("%d\n",satel[i].targetsAtTime[t][k]);
+
     }
 
+ 
  }
+ return 0;
+}
 
 
-        if (argc == 2) {
+        if (argc == 3) {
           unsigned int nbDone[10002];
           vector<pair<Point, pair<int, int> > > result;
-          readsol(argv[1], true, nbDone, result);
+          readsol(argv[2], true, nbDone, result);
           return 0;
         }
     if (!strcmp(argv[0], "./glouton"))
@@ -382,41 +395,4 @@ int glouton() {
   return 0;
 }
 
-
-int glouton2() {
-  vector<pair<Point, pair<int, int> > > result;
-  int satposx[50], satposy[50], satfree[50];
-  set<int> doneObj;
-  for (int i = 0; i < nbSat; i++)
-    satposx[i] = satposy[i] = satfree[i] = 0;
-  for (int t = 0; t < nbTours; t++) {
-    for (int s = 0; s < nbSat; s++) {
-      if (satfree[s] > t)
-        continue;
-      // choose an objective for s
-      vector<int> targets = satel[s].targetsAtTime[t];
-      // assuming that the objectives are OK
-      //if (t == 373)
-        //printf("sat %d at time %d can do %d targets\n", s, t, targets.size());
-      vector<int> myobj = listeAccessible(s, satfree[s], t, Point(satposx[s], satposy[s]));
-      for (unsigned int no = 0; no < myobj.size(); no++) {
-        int o = myobj[no];
-        if (doneObj.find(o) != doneObj.end())
-          continue; // done already
-        satfree[s] = t;
-        Point rel = satel[s].where_is(t, listeGlobPts[o]);
-        satposx[s] = rel.lat;
-        satposy[s] = rel.longi;
-        doneObj.insert(o);
-        result.push_back(make_pair(listeGlobPts[o], make_pair(t, s)));
-        // TODO may have done other things
-        break;
-      }
-    }
-  }
-  printf("%d\n", result.size());
-  for (unsigned int i = 0; i < result.size(); i++)
-    printf("%d %d %d %d\n", result[i].first.lat, result[i].first.longi, result[i].second.first, result[i].second.second);
-  return 0;
-}
 
