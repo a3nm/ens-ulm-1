@@ -20,6 +20,7 @@ using namespace std;
 int nbTours, nbSat, nbCollec;
 
 bool todoCollection[10002];
+bool oldTodoCollection[10002];
 
 struct Interv
 {
@@ -221,10 +222,10 @@ for(int i=0;i<nbSat;i++){
 }
 
 
-        if (argc == 3) {
+        if (argc == 4) {
           unsigned int nbDone[10002];
           vector<pair<Point, pair<int, int> > > result;
-          readsol(argv[2], true, nbDone, result);
+          readsol(argv[3], true, nbDone, result);
           return 0;
         }
     if (!strcmp(argv[0], "./glouton"))
@@ -235,6 +236,7 @@ for(int i=0;i<nbSat;i++){
       
     for (int c = 0; c < nbCollec; c++) {
       todoCollection[c] = true;
+      oldTodoCollection[c] = true;
     }
 
     while (true) {
@@ -242,16 +244,43 @@ for(int i=0;i<nbSat;i++){
       l.sol();
       int new_score = readsol("", false, nbDone, l.res);
       printf("old score was %d new score is %d\n", score, new_score);
+      if (score > new_score) {
+        // crap; reset and retry
+        printf("backtrack\n");
+        for (int c = 0; c < nbCollec; c++)
+          todoCollection[c] = oldTodoCollection[c];
+        continue;
+      }
+      // best so far
+      for (int c = 0; c < nbCollec; c++)
+        oldTodoCollection[c] = todoCollection[c];
       score = new_score;
+      l.print(string(argv[2]));
       // decide based on nbDone which tasks to do or not
+      int ndone= 0, ntodo = 0;
+      printf("we did collections: ");
       for (int c = 0; c < nbCollec; c++) {
         if (nbDone[c] == idLocCollec[c].size()) {
+          ndone++;
+          ntodo++;
           todoCollection[c] = true; // keep it
+          printf("%d ", c);
         } else {
           // not fully done, keep with low proba
-          todoCollection[c] = (!(rand() % 10));
+          //todoCollection[c] = (!(rand() % 150));
+          todoCollection[c] = false;
+          ntodo += todoCollection[c];
         }
       }
+      printf("\n");
+      printf("we will do collections ");
+      for (int c = 0; c < nbCollec; c++) {
+        if (todoCollection[c]) {
+          printf("%d ", c);
+        }
+      }
+      printf("\n");
+      printf("done %d TODO %d\n", ndone, ntodo);
     }
 
     return 0;
