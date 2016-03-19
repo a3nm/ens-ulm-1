@@ -13,11 +13,6 @@
 #define MAXT 150000
 #define MAXL 201
 
-#define MAXEXAM 60
-
-// estimated useful capa per roundtrip
-#define ESTIMATED_CAPA 60.
-
 using namespace std;
 
 int R, C, D, T, L;
