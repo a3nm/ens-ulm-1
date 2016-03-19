@@ -38,7 +38,7 @@ class louis
   {
     seen.clear();
     seen.resize(graph.size(),false);
-  
+    sub_find_path(sat);
   }
 
   void match()
@@ -83,25 +83,30 @@ public:
     done.resize(nbPtsTt,false);
     for(ui turn = 0 ; turn < nbTours ; turn++)
       {
+	objs.clear();
 	cur_pts.clear();
 	nb_pts = 0;
 	graph.clear();
 	for(ui sat = 0 ; sat < nbSat ; sat++)
 	  {
 	    graph.push_back(vector<ui>());
-	    for(const int pt :
-		  listeAccessible(sat,sat_time[sat],turn,sat_pos[sat]))
-		  if(!done[pt])
-		    graph[sat].push_back(tr(pt));
+	    for(const int pt : listeAccessible(sat,sat_time[sat],turn,sat_pos[sat]))
+	      if(!done[pt])
+		{
+		  graph[sat].push_back(tr(pt));
+		}
 	  }
 	match();
 	for(ui sat = 0 ; sat < nbSat ; sat++)
 	  if(assoc_sat[sat] != -1)
-	    for(ui pt_id : objs[assoc_sat[sat]])
-	      {
-		done[pt_id] = true ;
-		res.push_back( make_pair(listeGlobPts[pt_id],make_pair(turn,sat))) ;
-	      }
+	    {
+	      for(int v : objs[assoc_sat[sat]])
+		done[v] = true ;
+	      const int pt_id = objs[assoc_sat[sat]][0] ;
+	      res.push_back( make_pair(listeGlobPts[pt_id],make_pair(turn,sat))) ;
+	      sat_time[sat] = turn ;
+	      sat_pos[sat] = listeGlobPts[pt_id] ;
+	    }
       }
     
     printf("%llu\n",res.size());
