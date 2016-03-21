@@ -3,7 +3,7 @@
 std::vector<IntVar*> allvars;
 
 int main(int argc, char **argv) {
-  Solver s("CP is fun!", MPSolver::GLOP_LINEAR_PROGRAMMING);
+  Solver s("CP is fun!");
   scanf("%d%d", &nbTours, &nbSat);
 
   for (int i = 0; i < nbSat; i++) {
