@@ -18,7 +18,6 @@
 
 
 
-
 #define phi lat
 #define lambda longi
 
@@ -55,6 +54,7 @@ struct Point {
     Point res;
     res.lat = lat - o.lat;
     res.longi = longi-o.longi;
+    return res;
   }
 };
 struct State {
@@ -106,6 +106,11 @@ vector<int> valCollec;
 vector<Interv> toursPossibles[10000];
 set<Point> allTargets;
 
+//for gdb debug
+template class std::vector<int>;
+template class std::vector<Point>;
+template class std::vector<MPVariable*>;
+template class std::vector<vector< MPVariable*> > ;
 
 vector<Point> listeGlobPts;
 vector<vector<MPVariable *> > listeGlobPtsIV;
